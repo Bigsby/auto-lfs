@@ -1,0 +1,11 @@
+{
+    "propString": "prop value",
+    "propInt": 1,
+    "propBool": true,
+    "propNull": null,
+    "propList": [{
+        "name": "list one"
+    },{
+        "name": "list two"
+    }]
+}

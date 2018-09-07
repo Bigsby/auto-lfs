@@ -1,0 +1,14 @@
+{
+    "sections":[
+        {
+            "name": "Host System Requirements",
+            "steps": [
+                {
+                    "name": "Check versions",
+                    "type": "script",
+                    "file": "./scripts/version-check.sh"
+                }
+            ]
+        }
+    ]
+}
