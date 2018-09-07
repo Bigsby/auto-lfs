@@ -1,2 +1,3 @@
-# auto-lfs
-Automating Linux From Scratch
+# Auto LFS
+
+Automating [Linux From Scratch](http://www.linuxfromscratch.org/).
