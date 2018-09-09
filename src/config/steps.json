@@ -1,49 +1,61 @@
 [
     {
-        "name": "3. Packages and Patches ",
-        "commands":[
+        "name": "2.2. Host System Requirements",
+        "validate": {
+            "commands": "../scripts/version-check.sh"
+        }
+    },
+    {
+        "name": "3. Packages and Patches",
+        "commands": [
             "mkdir -v $LFS/sources",
             "chmod -v a+wt $LFS/sources",
             "wget http://www.linuxfromscratch.org/lfs/view/stable/wget-list",
             "wget --input-file=wget-list --continue --directory-prefix=$LFS/sources",
             "wget http://www.linuxfromscratch.org/lfs/view/stable/md5sums",
-            [
-                "pushd $LFS/sources",
-                "md5sum -c md5sums",
-                "popd"
-            ]
+            "pushd $LFS/sources",
+            "md5sum -c md5sums",
+            "popd"
         ]
     },
     {
-        "name": "4. Final Preparations ",
-        "commands":[
+        "name": "4.2. Creating the $LFS/tools Directory",
+        "commands": [
             "mkdir -v $LFS/tools",
-            "ln -sv $LFS/tools /",
+            "ln -sv $LFS/tools /"
+        ]
+    },
+    {
+        "name": "4.3. Adding the LFS User",
+        "commands": [
+            "groupadd lfs",
+            "useradd -s /bin/bash -g lfs -m -k /dev/null lfs",
+            "passwd lfs",
+            "chown -v lfs $LFS/tools",
+            "chown -v lfs $LFS/sources",
+            "su - lfs"
+        ]
+    },
+    {
+        "name": "4.4. Setting Up the Environment",
+        "commands": [
             [
-                "groupadd lfs",
-                "useradd -s /bin/bash -g lfs -m -k /dev/null lfs",
-                "passwd lfs",
-                "chown -v lfs $LFS/tools",
-                "chown -v lfs $LFS/sources",
-                [
-                    "cat > ~/.bash_profile << \"EOF\"",
-                    "exec env -i HOME=$HOME TERM=$TERM PS1='\\u:\\w\\$ ' /bin/bash",
-                    "EOF"
-                ],
-                [
-                    "cat > ~/.bashrc << \"EOF\"",
-                    "set +h",
-                    "umask 022",
-                    "LFS=/mnt/lfs",
-                    "LC_ALL=POSIX",
-                    "LFS_TGT=$(uname -m)-lfs-linux-gnu",
-                    "PATH=/tools/bin:/bin:/usr/bin",
-                    "export LFS LC_ALL LFS_TGT PATH",
-                    "EOF"
-                ],
-                "source ~/.bash_profile",
-                "su - lfs"
-            ]
+                "cat > ~/.bash_profile << \"EOF\"",
+                "exec env -i HOME=$HOME TERM=$TERM PS1='\\u:\\w\\$ ' /bin/bash",
+                "EOF"
+            ],
+            [
+                "cat > ~/.bashrc << \"EOF\"",
+                "set +h",
+                "umask 022",
+                "LFS=/mnt/lfs",
+                "LC_ALL=POSIX",
+                "LFS_TGT=$(uname -m)-lfs-linux-gnu",
+                "PATH=/tools/bin:/bin:/usr/bin",
+                "export LFS LC_ALL LFS_TGT PATH",
+                "EOF"
+            ],
+            "source ~/.bash_profile"
         ]
     },
     {
@@ -86,14 +98,13 @@
         "tar": "gcc-8.2.0.tar.xz",
         "sbus": 14.3,
         "size": "2.2 GB",
-        "commands":[
+        "commands": [
             "tar -xf ../mpfr-4.0.1.tar.xz",
             "mv -v mpfr-4.0.1 mpfr",
             "tar -xf ../gmp-6.1.2.tar.xz",
             "mv -v gmp-6.1.2 gmp",
             "tar -xf ../mpc-1.1.0.tar.gz",
-            "mv -v mpc-1.1.0 mpc"
-            ,
+            "mv -v mpc-1.1.0 mpc",
             [
                 "for file in gcc/config/{linux,i386/linux{,64}}.h",
                 "do",
@@ -160,11 +171,11 @@
     },
     {
         "name": "5.7. Glibc-2.28",
-        "type":"package",
+        "type": "package",
         "tar": "glibc-2.28.tar.xz",
         "sbus": 4.7,
         "size": "882 MB",
-        "commands":[
+        "commands": [
             "mkdir -v build",
             "cd build",
             [
@@ -181,7 +192,7 @@
             "make install"
         ],
         "validate": {
-            "commands":[
+            "commands": [
                 "echo 'int main(){}' > dummy.c",
                 "$LFS_TGT-gcc dummy.c",
                 "readelf -l a.out | grep ': /tools'"
@@ -196,7 +207,7 @@
         "tar": "gcc-8.2.0.tar.xz",
         "sbus": 0.5,
         "size": "803 MB",
-        "commands":[
+        "commands": [
             "mkdir -v build",
             "cd build",
             [
@@ -219,7 +230,7 @@
         "tar": "binutils-2.31.1.tar.xz",
         "sbus": 1.1,
         "size": "593 MB",
-        "commands":[
+        "commands": [
             "mkdir -v build",
             "cd build",
             [
@@ -233,7 +244,7 @@
                 "    --with-lib-path=/tools/lib",
                 "    --with-sysroot"
             ],
-            "make", 
+            "make",
             "make install",
             "make -C ld clean",
             "make -C ld LIB_PATH=/usr/lib:/lib",
@@ -246,7 +257,7 @@
         "tar": "gcc-8.2.0.tar.xz",
         "sbus": 11,
         "size": "3.4 GB",
-        "commands":[
+        "commands": [
             [
                 "cat gcc/limitx.h gcc/glimits.h gcc/limity.h >",
                 "`dirname $($LFS_TGT-gcc -print-libgcc-file-name)`/include-fixed/limits.h"
@@ -296,12 +307,12 @@
                 "    --disable-bootstrap                            ",
                 "    --disable-libgomp"
             ],
-            "make", 
+            "make",
             "make install",
             "ln -sv gcc /tools/bin/cc"
         ],
         "validate": {
-            "commands":[
+            "commands": [
                 "echo 'int main(){}' > dummy.c",
                 "cc dummy.c",
                 "readelf -l a.out | grep ': /tools'"
@@ -326,7 +337,330 @@
             "ln -sv tclsh8.6 /tools/bin/tclsh"
         ]
     },
-
+    {
+        "name": "5.12. Expect-5.45.4",
+        "type": "package",
+        "tar": "expect5.45.4.tar.gz",
+        "sbus": 0.1,
+        "size": "3.9 MB",
+        "commands": [
+            "cp -v configure{,.orig}",
+            "sed 's:/usr/local/bin:/bin:' configure.orig > configure",
+            [
+                "./configure --prefix=/tools",
+                "--with-tcl=/tools/lib",
+                "--with-tclinclude=/tools/include"
+            ],
+            "make",
+            "make SCRIPTS=\"\" install"
+        ]
+    },
+    {
+        "name": "5.13. DejaGNU-1.6.1",
+        "type": "package",
+        "tar": "dejagnu-1.6.1.tar.gz",
+        "sbus": 0.1,
+        "size": "3.2 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.14. M4-1.4.18",
+        "type": "package",
+        "tar": "m4-1.4.18.tar.xz",
+        "sbus": 0.2,
+        "size": "20 MB",
+        "commands": [
+            "sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c",
+            "echo \"#define _IO_IN_BACKUP 0x100\" >> lib/stdio-impl.h",
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.15. Ncurses-6.1",
+        "type": "package",
+        "tar": "ncurses-6.1.tar.gz",
+        "sbus": 0.6,
+        "size": "41 MB",
+        "commands": [
+            "sed -i s/mawk// configure",
+            [
+                "./configure --prefix=/tools",
+                "--with-shared ",
+                "--without-debug",
+                "--without-ada",
+                "--enable-widec",
+                "--enable-overwrite"
+            ],
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.16. Bash-4.4.18",
+        "type": "package",
+        "tar": "bash-4.4.18.tar.gz",
+        "sbus": 0.4,
+        "size": "63 MB",
+        "commands": [
+            "./configure --prefix=/tools --without-bash-malloc",
+            "make",
+            "make install",
+            "ln -sv bash /tools/bin/sh"
+        ]
+    },
+    {
+        "name": "5.17. Bison-3.0.5",
+        "type": "package",
+        "tar": "bison-3.0.5.tar.xz",
+        "sbus": 0.3,
+        "size": "35 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.18. Bzip2-1.0.6",
+        "type": "package",
+        "tar": "bzip2-1.0.6.tar.gz",
+        "sbus": 0.1,
+        "size": "5.5 MB",
+        "commands": [
+            "make",
+            "make PREFIX=/tools install"
+        ]
+    },
+    {
+        "name": "5.19. Coreutils-8.30",
+        "type": "package",
+        "tar": "coreutils-8.30.tar.xz",
+        "sbus": 0.7,
+        "size": "147 MB",
+        "commands": [
+            "./configure --prefix=/tools --enable-install-program=hostname",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.20. Diffutils-3.6",
+        "type": "package",
+        "tar": "diffutils-3.6.tar.xz",
+        "sbus": 0.2,
+        "size": "23 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.21. File-5.34",
+        "type": "package",
+        "tar": "file-5.34.tar.gz",
+        "sbus": 0.1,
+        "size": "18 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.22. Findutils-4.6.0",
+        "type": "package",
+        "tar": "findutils-4.6.0.tar.gz",
+        "sbus": 0.3,
+        "size": "36 MB",
+        "commands": [
+            "sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c",
+            "sed -i '/unistd/a #include <sys/sysmacros.h>' gl/lib/mountlist.c",
+            "echo \"#define _IO_IN_BACKUP 0x100\" >> gl/lib/stdio-impl.h",
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.23. Gawk-4.2.1",
+        "type": "package",
+        "tar": "gawk-4.2.1.tar.xz",
+        "sbus": 0.2,
+        "size": "43 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.24. Gettext-0.19.8.1",
+        "type": "package",
+        "tar": "gettext-0.19.8.1.tar.xz",
+        "sbus": 0.9,
+        "size": "173 MB",
+        "commands": [
+            "cd gettext-tools",
+            "EMACS=\"no\" ./configure --prefix=/tools --disable-shared",
+            "make -C gnulib-lib",
+            "make -C intl pluralx.c",
+            "make -C src msgfmt",
+            "make -C src msgmerge",
+            "make -C src xgettext",
+            "cp -v src/{msgfmt,msgmerge,xgettext} /tools/bin"
+        ]
+    },
+    {
+        "name": "5.25. Grep-3.1",
+        "type": "package",
+        "tar": "grep-3.1.tar.xz",
+        "sbus": 0.2,
+        "size": "20 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.26. Gzip-1.9",
+        "type": "package",
+        "tar": "gzip-1.9.tar.xz",
+        "sbus": 0.1,
+        "size": "19 GM",
+        "commands": [
+            "sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c",
+            "echo \"#define _IO_IN_BACKUP 0x100\" >> lib/stdio-impl.h",
+            "./configure --prefix=/tools",
+            "make", 
+            "make install"
+        ]
+    },
+    {
+        "name": "5.27. Make-4.2.1",
+        "type": "package",
+        "tar": "make-4.2.1.tar.bz2",
+        "sbus": 0.1,
+        "size": "13 MB",
+        "commands": [
+            "sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c",
+            "./configure --prefix=/tools --without-guile",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.28. Patch-2.7.6",
+        "type": "package",
+        "tar": "patch-2.7.6.tar.xz",
+        "sbus": 0.2,
+        "size": "12 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.29. Perl-5.28.0",
+        "type": "package",
+        "tar": "perl-5.28.0.tar.xz",
+        "sbus": 1.5,
+        "size": "275 MB",
+        "commands": [
+            "sh Configure -des -Dprefix=/tools -Dlibs=-lm -Uloclibpth -Ulocincpth",
+            "make",
+            "cp -v perl cpan/podlators/scripts/pod2man /tools/bin",
+            "mkdir -pv /tools/lib/perl5/5.28.0",
+            "cp -Rv lib/* /tools/lib/perl5/5.28.0"
+        ]
+    },
+    {
+        "name": "5.30. Sed-4.5",
+        "type": "package",
+        "tar": "sed-4.5.tar.xz",
+        "sbus": 0.2,
+        "size": "17 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make", 
+            "make install" 
+        ]
+    },
+    {
+        "name": "5.31. Tar-1.30",
+        "type": "package",
+        "tar": "tar-1.30.tar.xz",
+        "sbus": 0.4,
+        "size": "36 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.32. Texinfo-6.5",
+        "type": "package",
+        "tar": "texinfo-6.5.tar.xz",
+        "sbus": 0.2,
+        "size": "100 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.33. Util-linux-2.32.1",
+        "type": "package",
+        "tar": "util-linux-2.32.1.tar.xz",
+        "sbus": 1.0,
+        "size": "140 MB",
+        "commands": [
+            [
+                "./configure --prefix=/tools",
+                "--without-python",
+                "--disable-makeinstall-chown",
+                "--without-systemdsystemunitdir",
+                "--without-ncurses",
+                "PKG_CONFIG=\"\""
+            ],
+            "make", 
+            "make install"
+        ]
+    },
+    {
+        "name": "5.34. Xz-5.2.4",
+        "type": "package",
+        "tar": "xz-5.2.4.tar.xz",
+        "sbus": 0.2,
+        "size": "18 MB",
+        "commands": [
+            "./configure --prefix=/tools",
+            "make",
+            "make install"
+        ]
+    },
+    {
+        "name": "5.35. Stripping",
+        "commands": [
+            "strip --strip-debug /tools/lib/*",
+            "/usr/bin/strip --strip-unneeded /tools/{,s}bin/*",
+            "rm -rf /tools/{,share}/{info,man,doc}",
+            "find /tools/{lib,libexec} -name \\*.la -delete"
+        ]
+    },
+    {
+        "name": "5.36. Changing Ownership",
+        "commands": "chown -R root:root $LFS/tools"
+    },
     {
         "name": "Backup Tools",
         "commands": [
