@@ -43,5 +43,7 @@ process("./testerror.sh")
 # var_env = os.environ.copy()
 # var_env["THEKEY"] = "TheValue"
 # process("./testenv.sh", scope_env=var_env)
-os.environ["THEKEY"] = "TheValue"
+os.environ["THEKEY"] = "NewValue"
 process("./testenv.sh", scope_env=os.environ)
+
+process("../src/scripts/check-lfs.sh")
