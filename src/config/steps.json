@@ -253,17 +253,21 @@
         "commands": [
             "mkdir -v build",
             "cd build",
-            [
-                "CC=$LFS_TGT-gcc",
-                "AR=$LFS_TGT-ar",
-                "RANLIB=$LFS_TGT-ranlib",
-                "../configure",
-                "--prefix=/tools",
-                "--disable-nls",
-                "--disable-werror",
-                "--with-lib-path=/tools/lib",
-                "--with-sysroot"
-            ],
+            {
+                "params": {
+                    "CC": "$LFS_TGT-gcc",
+                    "AR": "$LFS_TGT-ar",
+                    "RANLIB": "$LFS_TGT-ranlib"
+                },
+                "commands": [
+                    "../configure",
+                    "--prefix=/tools",
+                    "--disable-nls",
+                    "--disable-werror",
+                    "--with-lib-path=/tools/lib",
+                    "--with-sysroot"
+                ]
+            },
             "make",
             "make install",
             "make -C ld clean",
@@ -318,21 +322,25 @@
             "mv -v mpc-1.1.0 mpc",
             "mkdir -v build",
             "cd build",
-            [
-                "CC=$LFS_TGT-gcc",
-                "CXX=$LFS_TGT-g++",
-                "AR=$LFS_TGT-ar",
-                "RANLIB=$LFS_TGT-ranlib",
-                "../configure",
-                "--prefix=/tools",
-                "--with-local-prefix=/tools",
-                "--with-native-system-header-dir=/tools/include ",
-                "--enable-languages=c,c++",
-                "--disable-libstdcxx-pch ",
-                "--disable-multilib",
-                "--disable-bootstrap",
-                "--disable-libgomp"
-            ],
+            {
+                "params": {
+                    "CC": "$LFS_TGT-gcc",
+                    "CXX": "$LFS_TGT-g++",
+                    "AR": "$LFS_TGT-ar",
+                    "RANLIB": "$LFS_TGT-ranlib"
+                },
+                "commands": [
+                    "../configure",
+                    "--prefix=/tools",
+                    "--with-local-prefix=/tools",
+                    "--with-native-system-header-dir=/tools/include ",
+                    "--enable-languages=c,c++",
+                    "--disable-libstdcxx-pch ",
+                    "--disable-multilib",
+                    "--disable-bootstrap",
+                    "--disable-libgomp"
+                ]
+            },
             "make",
             "make install",
             "ln -sv gcc /tools/bin/cc"
@@ -545,7 +553,12 @@
         "size": "173 MB",
         "commands": [
             "cd gettext-tools",
-            "EMACS=\"no\" ./configure --prefix=/tools --disable-shared",
+            {
+                "params": {
+                    "EMACS": "\"no\""
+                },
+                "commands": "./configure --prefix=/tools --disable-shared"
+            },
             "make -C gnulib-lib",
             "make -C intl pluralx.c",
             "make -C src msgfmt",

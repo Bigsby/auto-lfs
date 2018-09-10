@@ -47,3 +47,7 @@ os.environ["THEKEY"] = "NewValue"
 process("./testenv.sh", scope_env=os.environ)
 
 process("../src/scripts/check-lfs.sh")
+
+os.environ["PARAM1"] = "1"
+os.environ["PARAM2"] = "the second param"
+process("./testparams.sh", scope_env=os.environ)
