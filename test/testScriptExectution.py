@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import subprocess
+import os
 
 class bcolors:
     HEADER = '\033[95m'
@@ -18,34 +19,29 @@ def cleanOutput(output):
 def printOutput(stdout, stderr):
     if stderr != None:
         print("ERROR:", cleanOutput(stderr))
-
     print(cleanOutput(stdout))
 
 def executeAndPrint(session):
-
     print(bcolors.OKBLUE + "Executing:" + bcolors.ENDC, " ".join(session.args) if isinstance(session.args, list) else session.args)
-
     for line in session.stdout:
         print(cleanOutput(line))
-    
     session.poll()
     print((bcolors.OKGREEN if session.returncode != 1 else bcolors.FAIL) + "Execution complete with return code:", session.returncode, bcolors.ENDC)
 
-def process(script):
+def process(script, scope_env=None):
     if isinstance(script, str):
         script = script.split(" ")
-    session = subprocess.Popen(script, stdout=subprocess.PIPE)
+    session = subprocess.Popen(script, stdout=subprocess.PIPE) if scope_env == None else subprocess.Popen(script, stdout=subprocess.PIPE, env=scope_env)
     executeAndPrint(session)
-    print()
     print()
 
 process(["echo", "hello, me here!"])
+process("./forscript.sh")
+process("sudo service --status-all")
+process("./testerror.sh")
 
-script = "./forscript.sh"
-process(script)
-
-sudoScript = "sudo service --status-all"
-process(sudoScript)
-
-errorScript = "./testerror.sh"
-process(errorScript)
+# var_env = os.environ.copy()
+# var_env["THEKEY"] = "TheValue"
+# process("./testenv.sh", scope_env=var_env)
+os.environ["THEKEY"] = "TheValue"
+process("./testenv.sh", scope_env=os.environ)

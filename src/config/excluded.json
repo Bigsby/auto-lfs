@@ -1,5 +1,5 @@
 {
-    "sections":[
+    "sections": [
         // {
         //     "name": "Host System Requirements",
         //     "steps": [
@@ -11,7 +11,7 @@
         //     ]
         // }
         {
-            
+            "name": ""
         }
     ]
 }
