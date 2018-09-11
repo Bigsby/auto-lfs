@@ -17,18 +17,4 @@ disk=$1
 partition=$2
 mount_point=$3
 
-echo "Checking params..."
-
-blk=$(lsblk -l)
-
 echo "Setting up $1$2 on $3"
-
-fdisk $1
-# n and all defaults
-
-mkfs -t ext4 $1$2
-mkdir $3
-
-nano Fstab
-# /dev/sdb1       /mnt/lfs       ext4     defaults       0     0
-mount -a
