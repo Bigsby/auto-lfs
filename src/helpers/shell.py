@@ -92,32 +92,28 @@ def _execute_command(commandDefinition):
 
     output = []
     for line in session.stdout:
-        output.append(line.decode("ascii").strip())
+        decoded = line.decode("ascii").strip()
+        print(decoded)
+        output.append(decoded)
     
     error = []
     if session.stderr != None:
         for line in session.stderr:
-            error.append(line.decode("ascii").strip())
+            decoded = line.decode("ascii").strip()
+            print(_bcolors.error(decoded))
+            error.append(decoded)
 
     session.poll()    
     return _Result(session.returncode == 0 and len(error) == 0, output, error)
 
 
 def _execute_script(scriptDefinition):
-    command = ["/bin/bash", "-c"]
+    command = ["bash", "-c"]
     script = ""
     for line in scriptDefinition.lines:
         script += line + " "
     command.append(script)
     return _execute_command(_CommandDefinition(command))
-
-def _execute(_instruction):
-    if isinstance(_instruction, _CommandDefinition):
-        return _execute_command(_instruction)
-    elif isinstance(_instruction, _ScriptDefinition):
-        return _execute_script(_instruction)
-    else:
-        print(_bcolors.error("Unknown instrunction type: " + type(_instruction)))
 
 
 def _validate(validateDefinition):
@@ -130,12 +126,20 @@ def _validate(validateDefinition):
     result = _Result(True, [], [])
     for validationResult in results:
         result.success &= validationResult.success
+        result.output.append(validationResult.output)
+        result.error.append(validationResult.error)
     return result
     
 
 def _execute_commands(commandList):
     for command in commandList:
-        yield _execute(command)
+        if isinstance(command, _CommandDefinition):
+            yield _execute_command(command)
+        elif isinstance(command, _ScriptDefinition):
+            yield _execute_script(command)
+        else:
+            print(_bcolors.error("Unknown instrunction type: " + type(command)))
+            yield _Result(False, [], [])
 
 def process_validate(json):
     execution_definition = _ExecutionDefinition(json)
@@ -149,4 +153,6 @@ def process_validate(json):
         print(_bcolors.ok("Completed successfully!"))
     else:
         print(_bcolors.error("ERROR!"))
+        for error in result.error:
+            print(error)
         
