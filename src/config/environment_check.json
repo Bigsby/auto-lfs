@@ -1,0 +1,35 @@
+[
+    {
+        "name": "bash version",
+        "validate": {
+            "commands": {
+                "script": "bash --version | head -n1 | cut -d\" \" -f2-4"
+            },
+            "expression": "bash, version (3\\.[2-9])4",
+            "message": "Update bash"
+        }
+    },
+    {
+        "name": "/bin/sh linking to Bash",
+        "validate": {
+            "commands": "readlink -f /bin/sh",
+            "expression": "/bin/sh",
+            "resolution": [
+                "sudo rm /bin/sh",
+                "sudo /bin/bash /bin/sh"
+            ]
+        }
+    },
+    {
+        "name": "Binutils version",
+        "validate": {
+            "commands": [
+                {
+                    "script": "ld --version | head -n1 | cut -d\" \" -f3-"
+                }
+            ],
+            "expression": ".*GNU Binutils.*2.(2[5-9])|(30)",
+            "message": "Binutils version needs to be between 2.25 2.30"
+        }
+    }
+]

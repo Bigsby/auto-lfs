@@ -1,6 +1,8 @@
 #! /usr/bin/python3
 import json
 
+
+
 def printProp(data, prop):
     if prop in data:
         propValue = data[prop]
@@ -18,7 +20,7 @@ def printProp(data, prop):
 
 with open("./test.json") as f:
     data = json.load(f)
-
+    print(type(data))
     printProp(data, "propString")
     printProp(data, "propInt")
     printProp(data, "propBool")
