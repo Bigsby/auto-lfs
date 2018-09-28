@@ -30,7 +30,7 @@ def check_env(verbose: bool = False) -> Result:
                         print(executionDefinition.fail_message)
                     sys.exit("0")
 
-                print("Do you want to continue (Y/n)?")
+                print("Do you want to continue despite the error (Y/n)?")
                 option = getch()
                 if option == "n": sys.exit("0")
             results.append(result)
