@@ -1,5 +1,7 @@
 import json as _json
 from typing import Generator
+from enum import Enum
+
 
 class CommandDefinition:
     def __init__(self, command):
@@ -73,7 +75,7 @@ class ExecutionDefinition(_BaseDefinition):
 
 
 class Result(object):
-    def __init__(self, success:bool, output:list=None, error:list=None):
+    def __init__(self, success: bool, output: list = None, error: list = None):
         self.success = success
         self.output = output if output != None else []
         self.error = error if error != None else []
@@ -101,3 +103,47 @@ class Result(object):
             result.adderror(inner_result.error)
         return result
 
+
+class FileSystemTypes(Enum):
+    ext3 = 1
+    ext4 = 0
+
+    def __str__(self):
+        return self.name
+
+    @staticmethod
+    def names():
+        return list(map(lambda fs: fs.name, FileSystemTypes))
+
+    @staticmethod
+    def values():
+        return list(map(lambda fs: fs.value, FileSystemTypes))
+
+
+class EnvironmentDefinitionEncoder(_json.JSONEncoder):
+    def default(self, obj):  # pylint: disable=E0202
+        if isinstance(obj, EnvironmentDefinition):
+            return {
+                "mount": obj.mount,
+                "partition": obj.partition,
+                "file_system": obj.file_system
+            }
+        elif isinstance(obj, FileSystemTypes):
+            return obj.name
+        else:
+            return _json.JSONEncoder().default(obj)
+
+
+class EnvironmentDefinition(object):
+    def __init__(self, mount: str, partition: str,
+                 fileSystem: FileSystemTypes):
+        self.mount = mount
+        self.partition = partition
+        self.file_system = fileSystem
+
+    def print(self):
+        for key, value in self.__dict__.items():
+            print(key, "=", value)
+
+    def __str__(self):
+        return _json.dumps(self, cls=EnvironmentDefinitionEncoder, indent=2)

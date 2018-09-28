@@ -4,7 +4,7 @@ import subprocess, shlex, re
 from functools import reduce
 from typing import Generator
 
-from helpers.models import ExecutionDefinition, CommandDefinition, ValidationDefinition, Result, ScriptDefinition, CommandList
+from .models import ExecutionDefinition, CommandDefinition, ValidationDefinition, Result, ScriptDefinition, CommandList
 
 
 class _bcolors:
@@ -72,15 +72,6 @@ def _execute_script(scriptDefinition: ScriptDefinition,
         script += line
     command.append(script)
     return _execute_command(CommandDefinition(command), verbose)
-
-
-# def _wrap_results(results: Generator[Result, None, None]) -> Result:
-#     result = Result(True)
-#     for inner_result in results:
-#         result.success &= inner_result.success
-#         result.addoutput(inner_result.output)
-#         result.adderror(inner_result.error)
-#     return result
 
 
 def _validate(validateDefinition: ValidationDefinition,

@@ -2,14 +2,14 @@
 
 import os, json, sys
 
-from helpers import shell
-from helpers.getch import getch
-from helpers.models import ExecutionDefinition, Result
+from . import shell
+from .getch import getch
+from .models import ExecutionDefinition, Result
 
 
 def check_env(verbose: bool = False) -> Result:
     shell.print_bold("Checking host environment requirements...")
-    results=[]
+    results = []
     print()
     with open(
             os.path.dirname(os.path.abspath(__file__)) +
@@ -35,5 +35,5 @@ def check_env(verbose: bool = False) -> Result:
                 if option == "n": sys.exit("0")
             results.append(result)
             print()
-    
+
     return Result.group(results)
