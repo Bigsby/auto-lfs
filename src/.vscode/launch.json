@@ -8,8 +8,9 @@
             "name": "Python: Current File (Integrated Terminal)",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/auto-lfs.py",
-            "console": "integratedTerminal"
+            "program": "${workspaceFolder}/auto-lfs.py",
+            "console": "integratedTerminal",
+            "sudo": true
         }
     ]
 }

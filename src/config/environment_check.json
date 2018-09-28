@@ -1,35 +1,113 @@
 [
     {
+        "name": "Sudo",
+        "validate": {
+            "commands": "id -u",
+            "expression": "0"
+        },
+        "fail_message": "Run super user."
+    },
+    {
         "name": "bash version",
         "validate": {
             "commands": {
                 "script": "bash --version | head -n1 | cut -d\" \" -f2-4"
             },
-            "expression": "bash, version (3\\.[2-9])4",
+            "expression": "bash.*version\\s+(3|4)",
             "message": "Update bash"
-        }
+        },
+        "break_on_fail": false
     },
     {
         "name": "/bin/sh linking to Bash",
         "validate": {
             "commands": "readlink -f /bin/sh",
-            "expression": "/bin/sh",
+            "expression": "/bin/bash",
             "resolution": [
-                "sudo rm /bin/sh",
-                "sudo /bin/bash /bin/sh"
+                { 
+                    "script": "[ -e /bin/sh ] && rm /bin/sh"
+                },
+                "ln -s /bin/bash /bin/sh"
             ]
-        }
+        },
+        "break_on_fail": false
     },
     {
         "name": "Binutils version",
         "validate": {
-            "commands": [
-                {
-                    "script": "ld --version | head -n1 | cut -d\" \" -f3-"
-                }
-            ],
-            "expression": ".*GNU Binutils.*2.(2[5-9])|(30)",
-            "message": "Binutils version needs to be between 2.25 2.30"
-        }
+            "commands": {
+                "script": "ld --version | head -n1 | cut -d\" \" -f3-"
+            },
+            "expression": "GNU Binutils",
+            "message": "Binutils version needs to be between 2.25 2.30",
+            "resolution": "apt-get install binutils -y"
+        },
+        "break_on_fail": false
+    },
+    {
+        "name": "bison",
+        "validate": {
+            "commands": {
+                "script": "bison --version | head -n1"
+            },
+            "expression": "bison (GNU Bison) 2",
+            "resolution": "apt-get install bison -y"
+        },
+        "break_on_fail": false
+    },
+    {
+        "nane": "bzip2",
+        "validate": {
+            "commands": {
+                "script": "bzip2 --version 2>&1 < /dev/null | head -n1 | cut -d\" \" -f1,6-"
+            },
+            "expression": "bzip2, version 1",
+            "resolution": "apt-get install bzip2 -y"
+        },
+        "break_on_fail": false
+    },
+    {
+        "name": "Coreutils",
+        "validate": {
+            "commands": {
+                "script": "chown --version | head -n1 | cut -d\")\" -f2"
+            },
+            "expression": "8\\.2",
+            "resolution": "apt-get install coreutils -y"
+        },
+        "break_on_fail": false
+    },
+    {
+        "name": "diff",
+        "validate": {
+            "commands": {
+                "script": "diff --version | head -n1"
+            },
+            "expression": "diff \\(GNU diffutils\\) 3\\.",
+            "resolution": "apt-get install diffutils -y"
+        },
+        "break_on_fail": false
+    },
+    {
+        "name": "find",
+        "validate": {
+            "commands": {
+                "script": "find --version | head -n1"
+            },
+            "expression": "find \\(GNU findutils\\) 4\\.",
+            "resolution": "apt-get install findutils -y"
+        },
+        "break_on_fail": false
+    },
+    {
+        "name": "awk",
+        "validate": {
+            "commands": {
+                "script": "awk --version | head -n1"
+            },
+            "expression": "GNU Awk 4\\.",
+            "resolution": "apt-get install gawk -y"
+        },
+        "break_on_fail": false
     }
 ]
