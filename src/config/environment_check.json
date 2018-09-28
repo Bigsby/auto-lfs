@@ -1,6 +1,6 @@
 [
     {
-        "name": "Sudo",
+        "name": "Checking running as supert user",
         "validate": {
             "commands": "id -u",
             "expression": "0"
@@ -8,7 +8,7 @@
         "fail_message": "Run super user."
     },
     {
-        "name": "bash version",
+        "name": "Checking bash version",
         "validate": {
             "commands": {
                 "script": "bash --version | head -n1 | cut -d\" \" -f2-4"
@@ -19,49 +19,53 @@
         "break_on_fail": false
     },
     {
-        "name": "/bin/sh linking to Bash",
+        "name": "Checking /bin/sh linking to bash",
         "validate": {
             "commands": "readlink -f /bin/sh",
-            "expression": "/bin/bash",
+            "expression": "^/bin/bash",
             "resolution": [
-                { 
-                    "script": "[ -e /bin/sh ] && rm /bin/sh"
-                },
-                "ln -s /bin/bash /bin/sh"
+                {
+                    "script": [
+                        "pushd /bin",
+                        "[ -e sh ] && rm sh",
+                        "ln -vs bash sh",
+                        "popd"
+                    ]
+                }
             ]
         },
         "break_on_fail": false
     },
     {
-        "name": "Binutils version",
+        "name": "Checking binutils",
         "validate": {
             "commands": {
                 "script": "ld --version | head -n1 | cut -d\" \" -f3-"
             },
-            "expression": "GNU Binutils",
-            "message": "Binutils version needs to be between 2.25 2.30",
+            "expression": ".*GNU Binutils",
+            "message": "Install Binutils.",
             "resolution": "apt-get install binutils -y"
         },
         "break_on_fail": false
     },
     {
-        "name": "bison",
+        "name": "Checking bison",
         "validate": {
             "commands": {
                 "script": "bison --version | head -n1"
             },
-            "expression": "bison (GNU Bison) 2",
+            "expression": ".*GNU Bison",
             "resolution": "apt-get install bison -y"
         },
         "break_on_fail": false
     },
     {
-        "nane": "bzip2",
+        "name": "Checking bzip2",
         "validate": {
             "commands": {
                 "script": "bzip2 --version 2>&1 < /dev/null | head -n1 | cut -d\" \" -f1,6-"
             },
-            "expression": "bzip2, version 1",
+            "expression": "^bzip2.*Version",
             "resolution": "apt-get install bzip2 -y"
         },
         "break_on_fail": false
@@ -72,42 +76,196 @@
             "commands": {
                 "script": "chown --version | head -n1 | cut -d\")\" -f2"
             },
-            "expression": "8\\.2",
+            "expression": "\\d.\\d+",
             "resolution": "apt-get install coreutils -y"
         },
         "break_on_fail": false
     },
     {
-        "name": "diff",
+        "name": "Checking diff",
         "validate": {
             "commands": {
                 "script": "diff --version | head -n1"
             },
-            "expression": "diff \\(GNU diffutils\\) 3\\.",
+            "expression": ".*GNU diffutils",
             "resolution": "apt-get install diffutils -y"
         },
         "break_on_fail": false
     },
     {
-        "name": "find",
+        "name": "Checking find",
         "validate": {
             "commands": {
                 "script": "find --version | head -n1"
             },
-            "expression": "find \\(GNU findutils\\) 4\\.",
+            "expression": ".*GNU findutils",
             "resolution": "apt-get install findutils -y"
         },
         "break_on_fail": false
     },
     {
-        "name": "awk",
+        "name": "Checking awk",
         "validate": {
             "commands": {
                 "script": "awk --version | head -n1"
             },
-            "expression": "GNU Awk 4\\.",
+            "expression": "^GNU Awk",
             "resolution": "apt-get install gawk -y"
         },
         "break_on_fail": false
+    },
+    {
+        "name": "Checking gcc",
+        "validate": {
+            "commands": {
+                "script": "gcc --version | head -n1"
+            },
+            "expression": "^gcc",
+            "resolution": "apt-get install gcc -y"
+        }
+    },
+    {
+        "name": "Checking g++",
+        "validate": {
+            "commands": {
+                "script": "g++ --version | head -n1"
+            },
+            "expression": "^g\\+\\+",
+            "resolution": "apt-get install g++ -y"
+        }
+    },
+    {
+        "name": "Cheking glibc",
+        "validate": {
+            "commands": {
+                "script": "ldd --version | head -n1 | cut -d\" \" -f2-",
+                "expression": ".*GLIBC"
+            },
+            "resolution": "apt-get install libc6 -y"
+        }
+    },
+    {
+        "name": "Checking grep",
+        "validate": {
+            "commands": {
+                "script": "grep --version | head -n1"
+            },
+            "expression": ".*GNU grep",
+            "resolution": "apt-get install grep -y"
+        }
+    },
+    {
+        "name": "Checking gzip",
+        "validate": {
+            "commands": {
+                "script": "gzip --version | head -n1"
+            },
+            "expression": "^gzip",
+            "resolution": "apt-get install gzip -y"
+        }
+    },
+    {
+        "name": "Checking kernel version",
+        "validate": {
+            "commands": "cat /proc/version",
+            "expression": "^Linux.*version.*4"
+        },
+        "fail_message": "Update the kernel"
+    },
+    {
+        "name": "Checking m4",
+        "validate": {
+            "commands": {
+                "script": "m4 --version | head -n1"
+            },
+            "expression": ".*GNU M4",
+            "resolution": "apt-get install m4 -y"
+        }
+    },
+    {
+        "name": "Checking make",
+        "validate": {
+            "commands": {
+                "script": "make --version | head -n1"
+            },
+            "expression": "^GNU Make",
+            "resolution": "apt-get install make -y"
+        }
+    },
+    {
+        "name": "Checking patch",
+        "validate": {
+            "commands": {
+                "script": "patch --version | head -n1"
+            },
+            "expression": "^GNU patch",
+            "resolution": "apt-get install patch -y"
+        }
+    },
+    {
+        "name": "Checking Perl",
+        "validate": {
+            "commands": "perl -V:version",
+            "expression": "^version='5",
+            "resolution": "apt-get install perl -y"
+        }
+    },
+    {
+        "name": "Checking sed",
+        "validate": {
+            "commands": {
+                "script": "sed --version | head -n1"
+            },
+            "expression": ".*GNU sed",
+            "resolution": "apt-get install sed -y"
+        }
+    },
+    {
+        "name": "Checking tar",
+        "validate": {
+            "commands": {
+                "script": "tar --version | head -n1"
+            },
+            "expression": ".*GNU tar",
+            "resolution": "apt-get install tar -y"
+        }
+    },
+    {
+        "name": "Checking makeinfo",
+        "validate": {
+            "commands": {
+                "script": "makeinfo --version | head -n1"
+            },
+            "expression": ".*GNU texinfo",
+            "resolution": "apt-get install texinfo -y"
+        }
+    },
+    {
+        "name": "Checking xz",
+        "validate": {
+            "commands": {
+                "script": "xz --version | head -n1"
+            },
+            "expression": ".*XZ Utils",
+            "resolution": "apt-get install xz-utils -y"
+        }
+    },
+    {
+        "name": "Checking g++ compilation",
+        "validate": {
+            "commands": [
+                {
+                    "script": [
+                        "echo 'int main(){}' > dummy.c && g++ -o dummy dummy.c",
+                        "if [ -x dummy ];",
+                        "then echo \"OK\";",
+                        "else echo \"NOK\"; fi",
+                        "rm -f dummy.c dummy"
+                    ]
+                }
+            ],
+            "expression": "^OK"
+        },
+        "fail_message": "Check g++ install"
     }
 ]

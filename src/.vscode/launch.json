@@ -10,6 +10,9 @@
             "request": "launch",
             "program": "${workspaceFolder}/auto-lfs.py",
             "console": "integratedTerminal",
+            "args": [
+                "-v"
+            ],
             "sudo": true
         }
     ]

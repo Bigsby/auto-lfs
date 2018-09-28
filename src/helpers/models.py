@@ -1,3 +1,6 @@
+import json as _json
+from typing import Generator
+
 class CommandDefinition:
     def __init__(self, command):
         self.command = command
@@ -47,6 +50,9 @@ class _BaseDefinition(object):
     def _get_json(self, key, default_value=None):
         return self._json[key] if key in self._json else default_value
 
+    def __str__(self):
+        return _json.dumps(self._json)
+
 
 class ValidationDefinition(_BaseDefinition):
     def __init__(self, json):
@@ -62,22 +68,22 @@ class ExecutionDefinition(_BaseDefinition):
         self.name = json["name"]
         self.validate = ValidationDefinition(
             json["validate"]) if "validate" in json else None
-        self.break_on_fail = self._get_json("break", True)
+        self.break_on_fail = self._get_json("break_on_fail", True)
         self.fail_message = self._get_json("fail_message")
 
 
-class Result:
-    def __init__(self, success, output, error):
+class Result(object):
+    def __init__(self, success:bool, output:list=None, error:list=None):
         self.success = success
-        self.output = output
-        self.error = error   
+        self.output = output if output != None else []
+        self.error = error if error != None else []
 
-    def addoutput(self, op):
-        if isinstance(op, list):
-            for iop in op:
+    def addoutput(self, output):
+        if isinstance(output, list):
+            for iop in output:
                 self.addoutput(iop)
-        elif isinstance(op, str):
-            self.output.append(op)
+        elif isinstance(output, str):
+            self.output.append(output)
 
     def adderror(self, err):
         if isinstance(err, list):
@@ -86,4 +92,12 @@ class Result:
         elif isinstance(err, str):
             self.error.append(err)
 
+    @staticmethod
+    def group(results: Generator['Result', None, None]) -> 'Result':
+        result = Result(True)
+        for inner_result in results:
+            result.success &= inner_result.success
+            result.addoutput(inner_result.output)
+            result.adderror(inner_result.error)
+        return result
 
