@@ -4,14 +4,33 @@ from enum import Enum
 
 
 class CommandDefinition:
-    def __init__(self, command):
+    def __init__(self, command, show_output: bool = False):
         self.command = command
+        self.show_output = show_output
 
 
-class ScriptDefinition:
+class _BaseDefinition(object):
     def __init__(self, json):
         self._json = json
-        self._script = json["script"] if "script" in json else None
+
+    def _get_json(self, key, default_value=None):
+        return self._json[key] if key in self._json else default_value
+
+    def __str__(self):
+        return _json.dumps(self._json)
+
+
+class _BaseCommandsDefinition(_BaseDefinition):
+    def __init__(self, json):
+        _BaseDefinition.__init__(self, json)
+        self.commands = CommandList(self._get_json("commands")).iterate()
+
+
+class ScriptDefinition(_BaseDefinition):
+    def __init__(self, json):
+        _BaseDefinition.__init__(self, json)
+        self._script = self._get_json("script")
+        self.show_output = self._get_json("show-output", False)
         self.lines = self._get_lines()
 
     def _get_lines(self):
@@ -44,34 +63,26 @@ class CommandList:
             yield self._command_or_script(self._commands)
 
 
-class _BaseDefinition(object):
+class ValidationDefinition(_BaseCommandsDefinition):
     def __init__(self, json):
-        self._json = json
-        self.commands = CommandList(self._get_json("commands")).iterate()
-
-    def _get_json(self, key, default_value=None):
-        return self._json[key] if key in self._json else default_value
-
-    def __str__(self):
-        return _json.dumps(self._json)
-
-
-class ValidationDefinition(_BaseDefinition):
-    def __init__(self, json):
-        _BaseDefinition.__init__(self, json)
+        _BaseCommandsDefinition.__init__(self, json)
         self.expression = self._get_json("expression")
         self.message = self._get_json("message")
         self.resolution = CommandList(self._get_json("resolution")).iterate()
 
 
-class ExecutionDefinition(_BaseDefinition):
+class ExecutionDefinition(_BaseCommandsDefinition):
     def __init__(self, json):
-        _BaseDefinition.__init__(self, json)
+        _BaseCommandsDefinition.__init__(self, json)
         self.name = json["name"]
         self.validate = ValidationDefinition(
             json["validate"]) if "validate" in json else None
         self.break_on_fail = self._get_json("break_on_fail", True)
         self.fail_message = self._get_json("fail_message")
+        #self.vars = {}
+
+    # def addvar(self, key: str, value: str):
+    #     self.vars[key] = value
 
 
 class Result(object):

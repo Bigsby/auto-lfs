@@ -29,6 +29,6 @@ fdisk $1
 mkfs -t ext4 $1$2
 mkdir $3
 
-nano Fstab
+nano fstab
 # /dev/sdb1       /mnt/lfs       ext4     defaults       0     0
 mount -a

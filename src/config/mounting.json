@@ -1,0 +1,49 @@
+[
+    {
+        "name": "MOUNTPOINT_CHECK",
+        "validate": {
+            "commands": {
+                "script": "test -d $MOUNTPOINT && echo true"
+            },
+            "expression": "true"
+        }
+    },
+    {
+        "name": "MOUNTPOINT_CREATE",
+        "commands": "mkdir -pv $MOUNTPOINT"
+    },
+    {
+        "name": "FILESYSTEM_CREATE",
+        "commands": "mkfs -type $FILESYSTEM PARTITION"
+    },
+    {
+        "name": "PARTITION_CHECK",
+        "validate": {
+            "commands": {
+                "script": "lsblk -fno FSTYPE,MOUNTPOINT $PARTITION | sed -r \"s/ +/ /g\" | cut -d\" \" -f1,2"
+            },
+            "expression": "FILESYSTEMS MOUNTPOINT"
+        }
+    },
+    {
+        "name": "PARTITION_CREATE",
+        "commands": {
+            "script": [
+                "sudo fdisk /dev/sdb << end",
+                "n",
+                "p",
+                "",
+                "",
+                "w",
+                "end"
+            ]
+        }
+    },
+    {
+        "name": "PARTITION_MOUNT",
+        "commands": [
+            "echo -e '\\n$PARTITION $MOUNTPOINT $FILESYSTEM defaults 0 0\\n' >> /etc/fstab",
+            "mount -av"
+        ]
+    }
+]

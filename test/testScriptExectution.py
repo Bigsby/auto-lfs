@@ -51,3 +51,7 @@ process("../src/scripts/check-lfs.sh")
 os.environ["PARAM1"] = "1"
 os.environ["PARAM2"] = "the second param"
 process("./testparams.sh", scope_env=os.environ)
+
+cp_env=os.environ.copy()
+cp_env["THEVAR"]="The var"
+process("echo $THEVAR", scope_env=cp_env)

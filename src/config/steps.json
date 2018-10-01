@@ -2,15 +2,27 @@
     {
         "name": "3. Packages and Patches",
         "commands": [
-            "mkdir -v $LFS/sources",
-            "chmod -v a+wt $LFS/sources",
-            "wget http://www.linuxfromscratch.org/lfs/view/stable/wget-list",
-            "wget --input-file=wget-list --continue --directory-prefix=$LFS/sources",
-            "wget http://www.linuxfromscratch.org/lfs/view/stable/md5sums",
-            "pushd $LFS/sources",
-            "md5sum -c md5sums",
-            "popd"
-        ]
+            {
+                "script": [
+                    "[ -d $LFS/sources ] || mkdir -v $LFS/sources",
+                    "chmod -v a+wt $LFS/sources",
+                    "wget --input-file=$CONFIGDIRECTORY/packages_patches.txt --continue --directory-prefix=$LFS/sources"
+                ],
+                "show-output": true
+            }
+        ],
+        "validate": {
+            "commands": {
+                "script": [
+                    "pushd $LFS/sources",
+                    "md5sum -c $CONFIGDIRECTORY/checksums.txt",
+                    "popd"
+                ]
+            }
+        }
+    },
+    {
+        "name": "STOP"
     },
     {
         "name": "4.2. Creating the $LFS/tools Directory",
