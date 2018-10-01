@@ -59,7 +59,7 @@ def _execute_command(commandDefinition: CommandDefinition, vars: dict,
             nextLine = session.stdout.readline()
             if nextLine == "" and session.poll() is not None:
                 break
-            print(nextLine)
+            print(nextLine.decode("utf-8").strip())
 
     output = []
     if session.stdout != None:

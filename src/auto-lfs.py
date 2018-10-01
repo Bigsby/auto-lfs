@@ -31,7 +31,8 @@ def main(args):
             for error in mountResult.error:
                 print(error)
         else:
-            build(environmentDefinition, args.verbose)
+            buildResult = build(environmentDefinition, args.verbose)
+            
 
 
 parser = argparse.ArgumentParser(
