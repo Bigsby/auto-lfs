@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import subprocess, shlex, re, os
+import subprocess, shlex, re, os, sys
 from functools import reduce
 from typing import Generator
 
@@ -49,16 +49,19 @@ def _execute_command(commandDefinition: CommandDefinition, vars: dict,
     session = subprocess.Popen(
         command_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
     ) if commandDefinition.show_output == False else subprocess.Popen(
-        command_line, env=env)
+        command_line,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        env=env)
+
+    if commandDefinition.show_output:
+        while True:
+            nextLine = session.stdout.readline()
+            if nextLine == "" and session.poll() is not None:
+                break
+            print(nextLine)
 
     output = []
-    # if commandDefinition.show_output:
-    #     while True:
-    #         newLine = session.stdout.readline()
-    #         if newLine == "" and session.poll() is not None:
-    #             print(newLine)
-    #         output.append(newLine)
-    # else:
     if session.stdout != None:
         for line in session.stdout:
             decoded = line.decode("utf-8").strip()

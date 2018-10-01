@@ -3,7 +3,7 @@ from .config import load_json, config_directory
 from . import shell
 
 
-def buid(environment: EnvironmentDefinition, verbose: bool):
+def build(environment: EnvironmentDefinition, verbose: bool) -> Result:
     vars = {}
     vars["LFS"] = environment.mount
     vars["CONFIGDIRECTORY"] = config_directory()
@@ -15,3 +15,6 @@ def buid(environment: EnvironmentDefinition, verbose: bool):
             return Result.group(results)
 
         results.append(shell.process_validate(step, vars, verbose))
+
+    return Result.group(results)
+    

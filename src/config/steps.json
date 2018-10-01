@@ -5,9 +5,11 @@
             {
                 "script": [
                     "[ -d $LFS/sources ] || mkdir -v $LFS/sources",
-                    "chmod -v a+wt $LFS/sources",
-                    "wget --input-file=$CONFIGDIRECTORY/packages_patches.txt --continue --directory-prefix=$LFS/sources"
-                ],
+                    "chmod -v a+wt $LFS/sources"
+                ]
+            },
+            {
+                "script": "wget --input-file=$CONFIGDIRECTORY/wget-list --tries 3 --continue --directory-prefix=$LFS/sources",
                 "show-output": true
             }
         ],
@@ -15,9 +17,10 @@
             "commands": {
                 "script": [
                     "pushd $LFS/sources",
-                    "md5sum -c $CONFIGDIRECTORY/checksums.txt",
+                    "md5sum -c $CONFIGDIRECTORY/md5sums",
                     "popd"
-                ]
+                ],
+                "show-output": true
             }
         }
     },
