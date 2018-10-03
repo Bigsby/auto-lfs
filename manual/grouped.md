@@ -10,6 +10,12 @@ su -
 ```
 ---
 ```
+export DRIVE=sdb
+export PARTITION_NUMBER=1
+
+```
+---
+```
 #######################################
 ## 2.2. Host System Requirements
 #######################################
@@ -38,7 +44,10 @@ apt-get install -y \
   texinfo \
   xz-utils
 
-fdisk /dev/sdb << end
+DEVICE=/dev/$DRIVE
+PARTITION="$DEVICE$PARTITION_NUMBER"
+
+fdisk $DEVICE << end
 n
 p
 1
@@ -47,10 +56,11 @@ p
 w
 end
 
+
 export LFS=/mnt/lfs
-mkfs -v -t ext4 /dev/sdb1
-mkdir -pv $LFS
-echo -e "\n/dev/sdb1\t$LFS\text4\tdefaults\t0\t0\n" >> /etc/fstab
+mkfs -v -t ext4 $PARTITION
+mkdir -pv $LFShttp://www.linuxfromscratch.org/lfs/view/stable/index.html
+echo -e "\n$PARTITION\t$LFS\text4\tdefaults\t0\t0\n" >> /etc/fstab
 mount -a
 
 #######################################
