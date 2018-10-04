@@ -129,7 +129,7 @@ rm_cd() {
 log_file=~/build.log
 
 build_log () {
-    echo $1 >> $log_file
+    echo $1 >> ~/$log_file
 }
 
 function pad() {
