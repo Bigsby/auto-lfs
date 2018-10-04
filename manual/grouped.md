@@ -476,7 +476,7 @@ rm -v dummy.c a.out
 #######################################
 ## 5.11. Tcl-8.6.8 (0.9)
 #######################################
-stat_package "5.11. Tcl-8.6.8" tcl8.6.8-src tar.gz
+start_package "5.11. Tcl-8.6.8" tcl8.6.8-src tar.gz
 
 cd unix
 ./configure --prefix=/tools
