@@ -126,7 +126,7 @@ rm_cd() {
     fi
 }
 
-log_file=~/tmp/build.log
+log_file=~/build.log
 
 build_log () {
     echo $1 >> $log_file
