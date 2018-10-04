@@ -130,7 +130,7 @@ function go_to_sources() {
 function tar_cd() {
     last_package=$1
     go_to_sources
-    tar -x --checkpoint=100 -f "$last_package.$2"
+    tar xf "$last_package.$2"
     cd $last_package
 }
 
@@ -144,7 +144,7 @@ function rm_cd() {
 log_file=~/build.log
 
 function build_log () {
-    echo $1 >> ~/$log_file
+    echo $1 >> $log_file
 }
 
 function pad() {
