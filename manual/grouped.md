@@ -317,7 +317,7 @@ end_package
 #######################################
 ## 5.7. Glibc-2.28 (4.7)
 #######################################
-start_pacakge "5.7. Glibc-2.28" glibc-2.28 tar.xz
+start_package "5.7. Glibc-2.28" glibc-2.28 tar.xz
 
 mkdir -v build
 cd       build
