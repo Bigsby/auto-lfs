@@ -1034,6 +1034,7 @@ function end_package() {
 
 ```
 ---
+check kernel
 ```
 #######################################
 ## 6.7. Linux-4.18.5 API Headers 
@@ -1062,6 +1063,7 @@ end_package
 #######################################
 ## 6.9. Glibc-2.28 
 #######################################
+KERNEL=$(uname -r | cut -d"." -f1,2)
 start_package "6.9. Glibc-2.28 make" glibc-2.28 tar.xz
 
 patch -Np1 -i ../glibc-2.28-fhs-1.patch
@@ -1086,7 +1088,7 @@ cd       build
 CC="gcc -isystem $GCC_INCDIR -isystem /usr/include" \
 ../configure --prefix=/usr                          \
              --disable-werror                       \
-             --enable-kernel=3.2                    \
+             --enable-kernel=$KERNEL                \
              --enable-stack-protector=strong        \
              libc_cv_slibdir=/lib
 unset GCC_INCDIR
