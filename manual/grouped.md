@@ -45,6 +45,12 @@ apt-get install -y \
   texinfo \
   xz-utils
 
+```
+---
+```
+#######################################
+## 2.4. Creating a New Partition 
+#######################################
 DEVICE=/dev/$DRIVE
 PARTITION="$DEVICE$PARTITION_NUMBER"
 
