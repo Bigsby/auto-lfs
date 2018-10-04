@@ -128,3 +128,4 @@ echo "Starting VM..."
 
 # ISO=/mnt/ext/downloads/OSs/ubuntu-18.04.1-desktop-amd64.iso SDISK_NAME=LFS ./createvm.sh TestThree
 # ISO=/mnt/ext/downloads/OSs/en-gb_windows_10_multiple_editions_x64_dvd_6846903.iso ./createvm.sh Windows10
+# vboxmanage clonevm TestSix --mode all --name TestClone
