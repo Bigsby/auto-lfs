@@ -23,6 +23,7 @@ pushd /bin
 rm sh
 ln -s bash sh
 popd
+
 apt-get install -y \
   bash \
   binutils \
@@ -97,31 +98,13 @@ passwd lfs
 ```
 ---
 ```
-sudo chown -v lfs $LFS/tools
-sudo chown -v lfs $LFS/sources
+chown -v lfs $LFS/tools
+chown -v lfs $LFS/sources
 su - lfs
 
 ```
 ---
 ```
-#######################################
-## 4.4. Setting Up the Environment
-#######################################
-cat > ~/.bash_profile << "EOF"
-exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
-EOF
-cat > ~/.bashrc << "EOF"
-set +h
-umask 022
-LFS=/mnt/lfs
-LC_ALL=POSIX
-LFS_TGT=$(uname -m)-lfs-linux-gnu
-PATH=/tools/bin:/bin:/usr/bin
-export LFS LC_ALL LFS_TGT PATH
-
-EOF
-source ~/.bash_profile
-
 #######################################
 ## Helper functions
 #######################################
@@ -132,8 +115,8 @@ function go_to_sources() {
 function tar_cd() {
     last_package=$1
     go_to_sources
-    tar -x --checkpoint -f "$last_package.$2"
-    cd $2
+    tar -x --checkpoint=100 -f "$last_package.$2"
+    cd $last_package
 }
 
 rm_cd() {
@@ -211,6 +194,24 @@ end_package() {
     rm_cd
     end_timer
 }
+
+#######################################
+## 4.4. Setting Up the Environment
+#######################################
+cat > ~/.bash_profile << "EOF"
+exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
+EOF
+cat > ~/.bashrc << "EOF"
+set +h
+umask 022
+LFS=/mnt/lfs
+LC_ALL=POSIX
+LFS_TGT=$(uname -m)-lfs-linux-gnu
+PATH=/tools/bin:/bin:/usr/bin
+export LFS LC_ALL LFS_TGT PATH
+
+EOF
+source ~/.bash_profile
 
 #######################################
 ## 5.4. Binutils-2.31.1 - Pass 1 (1)
