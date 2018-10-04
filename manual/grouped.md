@@ -119,7 +119,7 @@ function tar_cd() {
     cd $last_package
 }
 
-rm_cd() {
+function rm_cd() {
     if [ -n "$last_package" ]; then
         go_to_sources
         rm -rf "$last_package"
@@ -128,7 +128,7 @@ rm_cd() {
 
 log_file=~/build.log
 
-build_log () {
+function build_log () {
     echo $1 >> ~/$log_file
 }
 
@@ -167,17 +167,17 @@ function format_time () {
     echo "$day"d"$hour"h"$min"m"$sec"s
 }
 
-formated_date() {
+function formated_date() {
     echo $(date +%FT%H:%M:%S)
 }
 
-start_timer() {
+function start_timer() {
     start_time=$SECONDS
     timer_title=$1
     build_log "$(formated_date) ($(format_time $start_time)) S $timer_title"
 }
 
-end_timer() {
+function end_timer() {
     if [ -n "$timer_title" ]; then
         end_time=$SECONDS
         elapsed="$(($end_time-$start_time))"
@@ -185,12 +185,12 @@ end_timer() {
     fi
 }
 
-start_package() {
+function start_package() {
     start_timer $1
     tar_cd $2 $3
 }
 
-end_package() {
+function end_package() {
     rm_cd
     end_timer
 }
