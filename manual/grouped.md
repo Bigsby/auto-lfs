@@ -376,7 +376,7 @@ end_package
 #######################################
 ## 5.9. Binutils-2.31.1 - Pass 2 (1.1)
 #######################################
-statt_packge "5.9. Binutils-2.31.1 - Pass 2" binutils-2.31.1 tar.xz
+start_package "5.9. Binutils-2.31.1 - Pass 2" binutils-2.31.1 tar.xz
 
 mkdir -v build
 cd       build
