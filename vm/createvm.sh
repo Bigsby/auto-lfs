@@ -3,8 +3,9 @@ DEFAULT_RAM="4096"
 DEFAULT_CPUS="2"
 DEFAULT_VRAM="128"
 DEFAULT_DISK_SIZE="40960"
+DEFAULT_SDISK_SIZE="102400"
 DEFAULT_DISK_FORMAT="VDI"
-DEFAULT_DISK_CONTROLLER="ide"
+DEFAULT_DISK_CONTROLLER="sata"
 DEFAULT_CD_CONTROLLER_NAME="IDE"
 
 function show_usage() {
@@ -60,12 +61,13 @@ DISK_SIZE=$(get_or_set "$DISK_SIZE" "PDISK" "$DEFAULT_DISK_SIZE")
 DISK_FORMAT=$(get_or_set "$DISK_FORMAT" "DISK_FORMAT" "$DEFAULT_DISK_FORMAT")
 DISK_EXTENSION=$(echo $DISK_FORMAT | tr A-Z a-z)
 DISK_PATH="$TARGET_FOLDER/$NAME.$DISK_EXTENSION"
-if [ -n "$SDISK_SIZE" ] && [ -n "$SDISK_NAME" ];
+if [ -n "$SDISK_NAME" ];
 then
+    SDISK_SIZE=$(get_or_set "$SDISK_SIZE" "SDISK_SIZE" "$DEFAULT_SDISK_SIZE")
     SDISK_PATH="$TARGET_FOLDER/$SDISK_NAME.$DISK_EXTENSION"
 fi
 DISK_CONTROLLER=$(get_or_set "$DISK_CONTROLLER" "DISK_CONTROLLER" "$DEFAULT_DISK_CONTROLLER")
-DISK_CONTROLLER_NAME=$($DISK_CONTROLLER | tr a-z A-Z)
+DISK_CONTROLLER_NAME=$(echo $DISK_CONTROLLER | tr a-z A-Z)
 
 echo -e "NAME:\t $NAME"
 echo -e "FOLDER:\t$TARGET_FOLDER"
@@ -73,7 +75,7 @@ echo -e "OS:\t$OS"
 echo -e "RAM:\t$RAM"
 echo -e "CPUS:\t$CPUS"
 echo -e "VRAM:\t$VRAM"
-echo -e "DCTRL:\t$DISK_CONTROLLER"
+echo -e "DCTRL:\t$DISK_CONTROLLER,$DISK_CONTROLLER_NAME"
 echo -e "DISK:\t$DISK_SIZE MB\t$DISK_FORMAT\t$DISK_PATH"
 
 if [ -n "$SDISK_PATH" ];
@@ -97,24 +99,32 @@ fi
 echo "Creating VM..."
 /usr/bin/vboxmanage createvm --name "$NAME" --ostype $OS --register
 /usr/bin/vboxmanage modifyvm "$NAME" --cpus $CPUS --memory $RAM --vram $VRAM
+
 echo "Creating CD Controller..."
 /usr/bin/vboxmanage storagectl "$NAME" --name "$DEFAULT_CD_CONTROLLER_NAME" --add ide --controller PIIX4
+
 echo "Creating disk controller..."
-/usr/bin/vboxmanage storagectl "$NAME" --name "$DISK_CONTROLLER_NAME" --add sata --controller IntelAhci
+/usr/bin/vboxmanage storagectl "$NAME" --name "$DISK_CONTROLLER_NAME" --add "$DISK_CONTROLLER" --controller IntelAhci
+
 echo "Creating primary disk..."
-/usr/bin/vboxmanage createmedium disk --filename "$DISK_PATH" --size $DISK_SIZE --format $DISK_FORMAT
+/usr/bin/vboxmanage createmedium disk --filename "$DISK_PATH" --size $DISK_SIZE --format "$DISK_FORMAT"
 /usr/bin/vboxmanage storageattach "$NAME" --storagectl "$DISK_CONTROLLER_NAME" --port 0 --device 0 --type hdd --medium "$DISK_PATH"
 if [ -n "$SDISK_PATH" ];
 then 
-    echo "Creating primary disk..."
+    echo "Creating secondary disk..."
     SDISK_PATH="$TARGET_FOLDER/$SDISK_NAME.$DISK_EXTENSION"
-    /usr/bin/vboxmanage createmedium disk --filename "$SDISK_PATH" --size $SDISK_SIZE --format $DISK_FORMAT
+    /usr/bin/vboxmanage createmedium disk --filename "$SDISK_PATH" --size $SDISK_SIZE --format "$DISK_FORMAT"
     /usr/bin/vboxmanage storageattach "$NAME" --storagectl "$DISK_CONTROLLER_NAME" --port 1 --device 0 --type hdd --medium "$SDISK_PATH"
 fi
+
 if [ -n "$ISO" ];
 then
+    echo "Attaching ISO"
     /usr/bin/vboxmanage storageattach "$NAME" --storagectl "$DEFAULT_CD_CONTROLLER_NAME" --port 0 --device 0 --type dvddrive --medium "$ISO"
 fi
 
 echo "Starting VM..."
 /usr/bin/vboxmanage startvm "$NAME"
+
+# ISO=/mnt/ext/downloads/OSs/ubuntu-18.04.1-desktop-amd64.iso SDISK_NAME=LFS ./createvm.sh TestThree
+# ISO=/mnt/ext/downloads/OSs/en-gb_windows_10_multiple_editions_x64_dvd_6846903.iso ./createvm.sh Windows10

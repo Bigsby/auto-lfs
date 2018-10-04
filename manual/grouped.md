@@ -213,18 +213,20 @@ end_package() {
 }
 
 #######################################
-## 5.4. Binutils-2.31.1 - Pass 1
+## 5.4. Binutils-2.31.1 - Pass 1 (1)
 #######################################
 start_package "5.4. Binutils-2.31.1 - Pass 1" binutils-2.31.1 tar.xz
 
 mkdir -v build
 cd       build
+
 ../configure --prefix=/tools            \
              --with-sysroot=$LFS        \
              --with-lib-path=/tools/lib \
              --target=$LFS_TGT          \
              --disable-nls              \
              --disable-werror
+
 make
 
 case $(uname -m) in
@@ -236,7 +238,7 @@ make install
 end_package
 
 #######################################
-## 5.5. GCC-8.2.0 - Pass 1
+## 5.5. GCC-8.2.0 - Pass 1 (14.3)
 #######################################
 start_package "5.5. GCC-8.2.0 - Pass 1" gcc-8.2.0 tar.xz
 
@@ -299,19 +301,19 @@ make install
 end_package
 
 #######################################
-## 5.6. Linux-4.18.5 API Headers
+## 5.6. Linux-4.18.5 API Headers (0.1)
 #######################################
 start_package "5.6. Linux-4.18.5 API Headers" linux-4.18.5 tar.xz
-cd linux-4.18.5
 
 make mrproper
+
 make INSTALL_HDR_PATH=dest headers_install
 cp -rv dest/include/* /tools/include
 
 end_package
 
 #######################################
-## 5.7. Glibc-2.28
+## 5.7. Glibc-2.28 (4.7)
 #######################################
 stat_pacakge "5.7. Glibc-2.28" glibc-2.28 tar.xz
 
@@ -338,6 +340,7 @@ end_package
 echo 'int main(){}' > dummy.c
 $LFS_TGT-gcc dummy.c
 readelf -l a.out | grep ': /tools'
+
 # Expected 
 #[Requesting program interpreter: /tools/lib64/ld-linux-x86-64.so.2]
 rm -v dummy.c a.out
@@ -346,7 +349,7 @@ rm -v dummy.c a.out
 ---
 ```
 #######################################
-## 5.8. Libstdc++ from GCC-8.2.0
+## 5.8. Libstdc++ from GCC-8.2.0 (0.5)
 #######################################
 start_package "5.8. Libstdc++ from GCC-8.2.0" gcc-8.2.0 tar.xz
 
@@ -368,7 +371,7 @@ make install
 end_package
 
 #######################################
-## 5.9. Binutils-2.31.1 - Pass 2
+## 5.9. Binutils-2.31.1 - Pass 2 (1.1)
 #######################################
 statt_packge "5.9. Binutils-2.31.1 - Pass 2" binutils-2.31.1 tar.xz
 
@@ -395,7 +398,7 @@ cp -v ld/ld-new /tools/bin
 end_package
 
 #######################################
-## 5.10. GCC-8.2.0 - Pass 2 
+## 5.10. GCC-8.2.0 - Pass 2 (11)
 #######################################
 start_package "5.10. GCC-8.2.0 - Pass 2" gcc-8.2.0 tar.xz
 
@@ -459,6 +462,7 @@ end_package
 echo 'int main(){}' > dummy.c
 cc dummy.c
 readelf -l a.out | grep ': /tools'
+
 # Expected
 #[Requesting program interpreter: /tools/lib64/ld-linux-x86-64.so.2]
 rm -v dummy.c a.out
@@ -467,7 +471,7 @@ rm -v dummy.c a.out
 ---
 ```
 #######################################
-## 5.11. Tcl-8.6.8 
+## 5.11. Tcl-8.6.8 (0.9)
 #######################################
 stat_package "5.11. Tcl-8.6.8" tcl8.6.8-src tar.gz
 
