@@ -188,7 +188,7 @@ function formated_date() {
 
 function start_timer() {
     start_time=$SECONDS
-    timer_title=$1
+    timer_title="$1"
     build_log "$(formated_date) ($(format_time $start_time)) S $timer_title"
 }
 
@@ -201,7 +201,7 @@ function end_timer() {
 }
 
 function start_package() {
-    start_timer $1
+    start_timer "$1"
     tar_cd $2 $3
 }
 
