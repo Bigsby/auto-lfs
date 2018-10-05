@@ -42,7 +42,7 @@ function rm_cd() {
 log_file=/tmp/build.log
 
 function build_log() {
-    echo "$(formated_date) $1" >> $log_file
+    echo "$(formated_date) ($(whoami)) $1" >> $log_file
 }
 
 function pad() {
@@ -1633,5 +1633,1531 @@ ln -sv bzip2 /bin/bunzip2
 ln -sv bzip2 /bin/bzcat
 
 end_package
+
+#######################################
+## 6.23. Pkg-config-0.29.2
+#######################################
+start_package "6.23. Pkg-config-0.29.2 make" pkg-config-0.29.2 tar.gz
+
+
+./configure --prefix=/usr              \
+            --with-internal-glib       \
+            --disable-host-tool        \
+            --docdir=/usr/share/doc/pkg-config-0.29.2
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.23. Pkg-config-0.29.2 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.23. Pkg-config-0.29.2 
+#######################################
+start_package "6.23. Pkg-config-0.29.2" ncurses-6.1 tar.gz
+
+sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
+
+./configure --prefix=/usr           \
+            --mandir=/usr/share/man \
+            --with-shared           \
+            --without-debug         \
+            --without-normal        \
+            --enable-pc-files       \
+            --enable-widec
+
+make
+
+make install
+
+mv -v /usr/lib/libncursesw.so.6* /lib
+
+ln -sfv ../../lib/$(readlink /usr/lib/libncursesw.so) /usr/lib/libncursesw.so
+
+for lib in ncurses form panel menu ; do
+    rm -vf                    /usr/lib/lib${lib}.so
+    echo "INPUT(-l${lib}w)" > /usr/lib/lib${lib}.so
+    ln -sfv ${lib}w.pc        /usr/lib/pkgconfig/${lib}.pc
+done
+
+rm -vf                     /usr/lib/libcursesw.so
+echo "INPUT(-lncursesw)" > /usr/lib/libcursesw.so
+ln -sfv libncurses.so      /usr/lib/libcurses.so
+
+mkdir -v       /usr/share/doc/ncurses-6.1
+cp -v -R doc/* /usr/share/doc/ncurses-6.1
+
+end_package 
+
+#######################################
+## 6.25. Attr-2.4.48
+#######################################
+start_package "6.25. Attr-2.4.48 make" attr-2.4.48 tar.gz
+
+./configure --prefix=/usr     \
+            --bindir=/bin     \
+            --disable-static  \
+            --sysconfdir=/etc \
+            --docdir=/usr/share/doc/attr-2.4.48
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.25. Attr-2.4.48 install"
+
+make install
+
+mv -v /usr/lib/libattr.so.* /lib
+ln -sfv ../../lib/$(readlink /usr/lib/libattr.so) /usr/lib/libattr.so
+
+end_package
+
+#######################################
+## 6.26. Acl-2.2.53
+#######################################
+start_package "6.26. Acl-2.2.53" acl-2.2.53 tar.gz
+
+./configure --prefix=/usr         \
+            --bindir=/bin         \
+            --disable-static      \
+            --libexecdir=/usr/lib \
+            --docdir=/usr/share/doc/acl-2.2.53
+
+make
+
+make install
+
+mv -v /usr/lib/libacl.so.* /lib
+ln -sfv ../../lib/$(readlink /usr/lib/libacl.so) /usr/lib/libacl.so
+
+end_package
+
+#######################################
+## 6.27. Libcap-2.25
+#######################################
+start_package "6.27. Libcap-2.25" libcap-2.25 tar.xz
+
+sed -i '/install.*STALIBNAME/d' libcap/Makefile
+
+make
+
+make RAISE_SETFCAP=no lib=lib prefix=/usr install
+chmod -v 755 /usr/lib/libcap.so
+
+mv -v /usr/lib/libcap.so.* /lib
+ln -sfv ../../lib/$(readlink /usr/lib/libcap.so) /usr/lib/libcap.so
+
+end_package
+
+#######################################
+## 6.28. Sed-4.5
+#######################################
+start_package "6.28. Sed-4.5 make" sed-4.5 tar.xz
+
+sed -i 's/usr/tools/'                 build-aux/help2man
+sed -i 's/testsuite.panic-tests.sh//' Makefile.in
+
+./configure --prefix=/usr --bindir=/bin
+
+make
+make html
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.28. Sed-4.5 install"
+
+make install
+install -d -m755           /usr/share/doc/sed-4.5
+install -m644 doc/sed.html /usr/share/doc/sed-4.5
+
+end_package
+
+#######################################
+## 6.29. Psmisc-23.1
+#######################################
+start_package "6.29. Psmisc-23.1" psmisc-23.1 tar.xz
+
+./configure --prefix=/usr
+
+make
+
+make install
+
+mv -v /usr/bin/fuser   /bin
+mv -v /usr/bin/killall /bin
+
+end_package
+
+#######################################
+## 6.30. Iana-Etc-2.30
+#######################################
+start_package "6.30. Iana-Etc-2.30" iana-etc-2.30 tar.bz2
+
+make
+
+make install
+
+end_package
+
+#######################################
+## 6.31. Bison-3.0.5
+#######################################
+start_package "6.31. Bison-3.0.5" bison-3.0.5 tar.xz
+
+./configure --prefix=/usr --docdir=/usr/share/doc/bison-3.0.5
+
+make
+
+make install
+
+end_package
+
+#######################################
+## 6.32. Flex-2.6.4
+#######################################
+start_package "6.32. Flex-2.6.4 make" flex-2.6.4 tar.gz
+
+sed -i "/math.h/a #include <malloc.h>" src/flexdef.h
+
+
+HELP2MAN=/tools/bin/true \
+./configure --prefix=/usr --docdir=/usr/share/doc/flex-2.6.4
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.32. Flex-2.6.4 install"
+
+make install
+
+ln -sv flex /usr/bin/lex
+
+end_package
+
+#######################################
+## 6.33. Grep-3.1
+#######################################
+start_package "6.33. Grep-3.1 make" grep-3.1 tar.xz
+
+./configure --prefix=/usr --bindir=/bin
+
+make
+
+make -k check
+
+end_timer
+
+```
+---
+```
+start_timer "6.33. Grep-3.1 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.34. Bash-4.4.18
+#######################################
+start_package "6.34. Bash-4.4.18 make" bash-4.4.18 tar.gz
+
+./configure --prefix=/usr                       \
+            --docdir=/usr/share/doc/bash-4.4.18 \
+            --without-bash-malloc               \
+            --with-installed-readline
+
+make
+
+chown -Rv nobody .
+su nobody -s /bin/bash -c "PATH=$PATH make tests"
+
+end_timer
+
+```
+---
+```
+start_timer "6.34. Bash-4.4.18 install"
+
+make install
+mv -vf /usr/bin/bash /bin
+
+end_package
+
+exec /bin/bash --login +h
+
+```
+---
+check helper functions
+```
+#######################################
+## 6.35. Libtool-2.4.6
+#######################################
+start_package "6.35. Libtool-2.4.6 make" libtool-2.4.6 tar.xz
+
+./configure --prefix=/usr
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.35. Libtool-2.4.6 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.36. GDBM-1.17
+#######################################
+start_package "6.36. GDBM-1.17 make" gdbm-1.17 tar.gz
+
+./configure --prefix=/usr \
+            --disable-static \
+            --enable-libgdbm-compat
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.36. GDBM-1.17 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.37. Gperf-3.1
+#######################################
+start_package "6.37. Gperf-3.1 make" gperf-3.1 tar.gz
+
+./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1
+
+make
+
+make -j1 check
+
+end_timer
+
+```
+---
+```
+start_timer "6.37. Gperf-3.1 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.37. Gperf-3.1
+#######################################
+start_package "6.38. Expat-2.2.6 make" expat-2.2.6 tar.bz2
+
+sed -i 's|usr/bin/env |bin/|' run.sh.in
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/expat-2.2.6
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.38. Expat-2.2.6 install"
+
+make install
+
+install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-2.2.6
+
+end_package
+
+#######################################
+## 6.39. Inetutils-1.9.4
+#######################################
+start_package "6.39. Inetutils-1.9.4 make" inetutils-1.9.4 tar.xz
+
+./configure --prefix=/usr        \
+            --localstatedir=/var \
+            --disable-logger     \
+            --disable-whois      \
+            --disable-rcp        \
+            --disable-rexec      \
+            --disable-rlogin     \
+            --disable-rsh        \
+            --disable-servers
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.39. Inetutils-1.9.4 install"
+
+make install
+
+mv -v /usr/bin/{hostname,ping,ping6,traceroute} /bin
+mv -v /usr/bin/ifconfig /sbin
+
+
+end_package
+
+#######################################
+## 6.40. Perl-5.28.0
+#######################################
+start_package "6.40. Perl-5.28.0 make" perl-5.28.0 tar.xz
+
+echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
+
+export BUILD_ZLIB=False
+export BUILD_BZIP2=0
+
+sh Configure -des -Dprefix=/usr                 \
+                  -Dvendorprefix=/usr           \
+                  -Dman1dir=/usr/share/man/man1 \
+                  -Dman3dir=/usr/share/man/man3 \
+                  -Dpager="/usr/bin/less -isR"  \
+                  -Duseshrplib                  \
+                  -Dusethreads
+
+make
+
+make -k test
+
+end_timer
+
+```
+---
+```
+start_timer "6.40. Perl-5.28.0 install"
+
+make install
+unset BUILD_ZLIB BUILD_BZIP2
+
+end_package
+
+#######################################
+## 6.41. XML::Parser-2.44
+#######################################
+start_package "6.41. XML::Parser-2.44 make" XML-Parser-2.44 tar.gz
+
+perl Makefile.PL
+
+make
+
+make test
+
+end_timer
+
+```
+---
+```
+start_timer "6.41. XML::Parser-2.44 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.42. Intltool-0.51.0
+#######################################
+start_package "6.42. Intltool-0.51.0 make" intltool-0.51.0 tar.gz
+
+sed -i 's:\\\${:\\\$\\{:' intltool-update.in
+
+./configure --prefix=/usr
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.42. Intltool-0.51.0 install"
+
+make install
+install -v -Dm644 doc/I18N-HOWTO /usr/share/doc/intltool-0.51.0/I18N-HOWTO
+
+end_package
+
+#######################################
+## 6.43. Autoconf-2.69
+#######################################
+start_package "6.43. Autoconf-2.69 make" autoconf-2.69 tar.xz
+
+./configure --prefix=/usr
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.43. Autoconf-2.69 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.44. Automake-1.16.1
+#######################################
+start_package "6.44. Automake-1.16.1 make" automake-1.16.1 tar.xz
+
+./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.16.1
+
+make
+
+make -j4 check
+
+end_timer
+
+```
+---
+```
+start_timer "6.44. Automake-1.16.1 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.45. Xz-5.2.4
+#######################################
+start_package "6.45. Xz-5.2.4 make" xz-5.2.4 tar.xz
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/xz-5.2.4
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.45. Xz-5.2.4 install"
+
+make install
+mv -v   /usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} /bin
+mv -v /usr/lib/liblzma.so.* /lib
+ln -svf ../../lib/$(readlink /usr/lib/liblzma.so) /usr/lib/liblzma.so
+
+end_package
+
+#######################################
+## 6.46. Kmod-25
+#######################################
+start_package "6.46. Kmod-25 make" kmod-25 tar.xz
+
+./configure --prefix=/usr          \
+            --bindir=/bin          \
+            --sysconfdir=/etc      \
+            --with-rootlibdir=/lib \
+            --with-xz              \
+            --with-zlib
+
+make
+
+make install
+
+for target in depmod insmod lsmod modinfo modprobe rmmod; do
+  ln -sfv ../bin/kmod /sbin/$target
+done
+
+ln -sfv kmod /bin/lsmod
+
+end_package
+
+#######################################
+## 6.47. Gettext-0.19.8.1
+#######################################
+start_package "6.47. Gettext-0.19.8.1 make" gettext-0.19.8.1 tar.xz
+
+sed -i '/^TESTS =/d' gettext-runtime/tests/Makefile.in &&
+sed -i 's/test-lock..EXEEXT.//' gettext-tools/gnulib-tests/Makefile.in
+
+sed -e '/AppData/{N;N;p;s/\.appdata\./.metainfo./}' \
+    -i gettext-tools/its/appdata.loc
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/gettext-0.19.8.1
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.47. Gettext-0.19.8.1 install"
+
+make install
+chmod -v 0755 /usr/lib/preloadable_libintl.so
+
+end_package
+
+#######################################
+## 6.48. Libelf 0.173
+#######################################
+start_package "6.48. Libelf 0.173 make" elfutils-0.173 tar.bz2
+
+./configure --prefix=/usr
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.48. Libelf 0.173 install"
+
+make -C libelf install
+install -vm644 config/libelf.pc /usr/lib/pkgconfig
+
+end_package
+
+#######################################
+## 6.49. Libffi-3.2.1
+#######################################
+start_package "6.49. Libffi-3.2.1 make" libffi-3.2.1 tar.gz
+
+sed -e '/^includesdir/ s/$(libdir).*$/$(includedir)/' \
+    -i include/Makefile.in
+
+sed -e '/^includedir/ s/=.*$/=@includedir@/' \
+    -e 's/^Cflags: -I${includedir}/Cflags:/' \
+    -i libffi.pc.in
+
+./configure --prefix=/usr --disable-static --with-gcc-arch=native
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.49. Libffi-3.2.1 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.50. OpenSSL-1.1.0i
+#######################################
+start_package "6.50. OpenSSL-1.1.0i make" openssl-1.1.0i tar.gz
+
+./config --prefix=/usr         \
+         --openssldir=/etc/ssl \
+         --libdir=lib          \
+         shared                \
+         zlib-dynamic
+
+make
+
+make test
+
+end_timer
+
+```
+---
+```
+start_timer "6.50. OpenSSL-1.1.0i install"
+
+sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile
+make MANSUFFIX=ssl install
+
+mv -v /usr/share/doc/openssl /usr/share/doc/openssl-1.1.0i
+cp -vfr doc/* /usr/share/doc/openssl-1.1.0i
+
+end_package
+
+#######################################
+## 6.51. Python-3.7.0
+#######################################
+start_package " make" Python-3.7.0 tar.xz
+
+./configure --prefix=/usr       \
+            --enable-shared     \
+            --with-system-expat \
+            --with-system-ffi   \
+            --with-ensurepip=yes
+
+make
+
+make install
+chmod -v 755 /usr/lib/libpython3.7m.so
+chmod -v 755 /usr/lib/libpython3.so
+
+install -v -dm755 /usr/share/doc/python-3.7.0/html 
+
+tar --strip-components=1  \
+    --no-same-owner       \
+    --no-same-permissions \
+    -C /usr/share/doc/python-3.7.0/html \
+    -xvf ../python-3.7.0-docs-html.tar.bz2
+
+end_package
+
+#######################################
+## 6.52. Ninja-1.8.2
+#######################################
+start_package "6.52. Ninja-1.8.2 make" ninja-1.8.2 tar.gz
+
+export NINJAJOBS=4
+
+patch -Np1 -i ../ninja-1.8.2-add_NINJAJOBS_var-1.patch
+
+python3 configure.py
+./ninja ninja_test
+./ninja_test --gtest_filter=-SubprocessTest.SetWithLot
+
+end_timer
+
+```
+---
+```
+start_timer " install"
+
+install -vm755 ninja /usr/bin/
+install -vDm644 misc/bash-completion /usr/share/bash-completion/completions/ninja
+install -vDm644 misc/zsh-completion  /usr/share/zsh/site-functions/_ninja
+
+end_package
+
+#######################################
+## 6.53. Meson-0.47.1
+#######################################
+start_package "6.53. Meson-0.47.1" meson-0.47.1 tar.gz
+
+python3 setup.py build
+
+python3 setup.py install --root=dest
+cp -rv dest/* /
+
+end_package
+
+#######################################
+## 6.54. Procps-ng-3.3.15
+#######################################
+start_package "6.54. Procps-ng-3.3.15 make" procps-ng-3.3.15 tar.xz
+
+./configure --prefix=/usr                            \
+            --exec-prefix=                           \
+            --libdir=/usr/lib                        \
+            --docdir=/usr/share/doc/procps-ng-3.3.15 \
+            --disable-static                         \
+            --disable-kill
+
+make
+
+sed -i -r 's|(pmap_initname)\\\$|\1|' testsuite/pmap.test/pmap.exp
+sed -i '/set tty/d' testsuite/pkill.test/pkill.exp
+rm testsuite/pgrep.test/pgrep.exp
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.54. Procps-ng-3.3.15 install"
+
+make install
+
+mv -v /usr/lib/libprocps.so.* /lib
+ln -sfv ../../lib/$(readlink /usr/lib/libprocps.so) /usr/lib/libprocps.so
+
+end_package
+
+#######################################
+## 6.55. E2fsprogs-1.44.3
+#######################################
+start_package "6.55. E2fsprogs-1.44.3 make" e2fsprogs-1.44.3 tar.gz
+
+mkdir -v build
+cd build
+
+../configure --prefix=/usr           \
+             --bindir=/bin           \
+             --with-root-prefix=""   \
+             --enable-elf-shlibs     \
+             --disable-libblkid      \
+             --disable-libuuid       \
+             --disable-uuidd         \
+             --disable-fsck
+
+make
+
+ln -sfv /tools/lib/lib{blk,uu}id.so.1 lib
+make LD_LIBRARY_PATH=/tools/lib check
+
+end_timer
+
+```
+---
+```
+start_timer "6.55. E2fsprogs-1.44.3 install"
+
+make install
+
+make install-libs
+
+chmod -v u+w /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
+
+gunzip -v /usr/share/info/libext2fs.info.gz
+install-info --dir-file=/usr/share/info/dir /usr/share/info/libext2fs.info
+
+makeinfo -o      doc/com_err.info ../lib/et/com_err.texinfo
+install -v -m644 doc/com_err.info /usr/share/info
+install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info
+
+end_package
+
+#######################################
+## 6.56. Coreutils-8.30
+#######################################
+start_package "6.56. Coreutils-8.30 make" coreutils-8.30 tar.xz
+
+patch -Np1 -i ../coreutils-8.30-i18n-1.patch
+
+sed -i '/test.lock/s/^/#/' gnulib-tests/gnulib.mk
+
+autoreconf -fiv
+FORCE_UNSAFE_CONFIGURE=1 ./configure \
+            --prefix=/usr            \
+            --enable-no-install-program=kill,uptime
+
+FORCE_UNSAFE_CONFIGURE=1 make
+
+### Test start here
+make NON_ROOT_USERNAME=nobody check-root
+
+echo "dummy:x:1000:nobody" >> /etc/group
+
+chown -Rv nobody . 
+
+su nobody -s /bin/bash \
+          -c "PATH=$PATH make RUN_EXPENSIVE_TESTS=yes check"
+
+sed -i '/dummy/d' /etc/group
+
+end_timer
+
+```
+---
+```
+start_timer "6.56. Coreutils-8.30 install"
+
+make install
+
+mv -v /usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} /bin
+mv -v /usr/bin/{false,ln,ls,mkdir,mknod,mv,pwd,rm} /bin
+mv -v /usr/bin/{rmdir,stty,sync,true,uname} /bin
+mv -v /usr/bin/chroot /usr/sbin
+mv -v /usr/share/man/man1/chroot.1 /usr/share/man/man8/chroot.8
+sed -i s/\"1\"/\"8\"/1 /usr/share/man/man8/chroot.8
+
+mv -v /usr/bin/{head,sleep,nice} /bin
+
+end_package
+
+#######################################
+## 6.58. Diffutils-3.6
+#######################################
+start_package "6.58. Diffutils-3.6 make" diffutils-3.6 tar.xz
+
+./configure --prefix=/usr
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.58. Diffutils-3.6 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.59. Gawk-4.2.1
+#######################################
+start_package "6.59. Gawk-4.2.1 make" gawk-4.2.1 tar.xz
+
+sed -i 's/extras//' Makefile.in
+
+./configure --prefix=/usr
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.59. Gawk-4.2.1 install"
+
+make install
+
+mkdir -v /usr/share/doc/gawk-4.2.1
+cp    -v doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-4.2.1
+
+end_package
+
+#######################################
+## 6.60. Findutils-4.6.0
+#######################################
+start_package "6.60. Findutils-4.6.0 make" findutils-4.6.0 tar.gz
+
+sed -i 's/test-lock..EXEEXT.//' tests/Makefile.in
+
+sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c
+sed -i '/unistd/a #include <sys/sysmacros.h>' gl/lib/mountlist.c
+echo "#define _IO_IN_BACKUP 0x100" >> gl/lib/stdio-impl.h
+
+./configure --prefix=/usr --localstatedir=/var/lib/locate
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.60. Findutils-4.6.0 install"
+
+make install
+
+mv -v /usr/bin/find /bin
+sed -i 's|find:=${BINDIR}|find:=/bin|' /usr/bin/updatedb
+
+end_package
+
+#######################################
+## 6.61. Groff-1.22.3
+#######################################
+start_package "6.61. Groff-1.22.3" groff-1.22.3 tar.gz 
+
+PAGE=<paper_size> ./configure --prefix=/usr
+
+make -j1
+
+make install
+
+end_package
+
+#######################################
+## 6.62. GRUB-2.02
+#######################################
+start_package "6.62. GRUB-2.02" grub-2.02 tar.xz
+
+./configure --prefix=/usr          \
+            --sbindir=/sbin        \
+            --sysconfdir=/etc      \
+            --disable-efiemu       \
+            --disable-werror
+
+make
+
+make install
+
+end_package
+
+#######################################
+## 6.63. Less-530
+#######################################
+start_package "6.63. Less-530" less-530 tar.gz
+
+./configure --prefix=/usr --sysconfdir=/etc
+
+make
+
+make install
+
+end_package
+
+#######################################
+## 6.64. Gzip-1.9
+#######################################
+start_package "6.64. Gzip-1.9 make" gzip-1.9 tar.xz
+
+sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
+echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
+
+./configure --prefix=/usr
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.64. Gzip-1.9 install"
+
+make install
+
+mv -v /usr/bin/gzip /bin
+
+end_package
+
+#######################################
+## 6.65. IPRoute2-4.18.0
+#######################################
+start_package "6.65. IPRoute2-4.18.0" iproute2-4.18.0 tar.xz
+
+sed -i /ARPD/d Makefile
+rm -fv man/man8/arpd.8
+
+sed -i 's/.m_ipt.o//' tc/Makefile
+
+make
+
+make DOCDIR=/usr/share/doc/iproute2-4.18.0 install
+
+end_package
+
+#######################################
+## 6.66. Kbd-2.0.4
+#######################################
+start_package "6.66. Kbd-2.0.4 make" kbd-2.0.4 tar.xz
+
+patch -Np1 -i ../kbd-2.0.4-backspace-1.patch
+
+sed -i 's/\(RESIZECONS_PROGS=\)yes/\1no/g' configure
+sed -i 's/resizecons.8 //' docs/man/man8/Makefile.in
+
+PKG_CONFIG_PATH=/tools/lib/pkgconfig ./configure --prefix=/usr --disable-vlock
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.66. Kbd-2.0.4 install"
+
+make install
+
+mkdir -v       /usr/share/doc/kbd-2.0.4
+cp -R -v docs/doc/* /usr/share/doc/kbd-2.0.4
+
+end_package
+
+#######################################
+## 6.67. Libpipeline-1.5.0
+#######################################
+start_package "6.67. Libpipeline-1.5.0 make" libpipeline-1.5.0 tar.gz
+
+./configure --prefix=/usr
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.67. Libpipeline-1.5.0 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.68. Make-4.2.1
+#######################################
+start_package "6.68. Make-4.2.1 make" make-4.2.1 tar.bz2
+
+sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
+
+./configure --prefix=/usr
+
+make
+
+make PERL5LIB=$PWD/tests/ check
+
+end_timer
+
+```
+---
+```
+start_timer "6.68. Make-4.2.1 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.69. Patch-2.7.6
+#######################################
+start_package "6.69. Patch-2.7.6 make" patch-2.7.6 tar.xz
+
+./configure --prefix=/usr
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.69. Patch-2.7.6 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.70. Sysklogd-1.5.1
+#######################################
+start_package "6.70. Sysklogd-1.5.1" sysklogd-1.5.1 tar.gz
+
+sed -i '/Error loading kernel symbols/{n;n;d}' ksym_mod.c
+sed -i 's/union wait/int/' syslogd.c
+
+make
+
+make BINDIR=/sbin install
+
+cat > /etc/syslog.conf << "EOF"
+# Begin /etc/syslog.conf
+
+auth,authpriv.* -/var/log/auth.log
+*.*;auth,authpriv.none -/var/log/sys.log
+daemon.* -/var/log/daemon.log
+kern.* -/var/log/kern.log
+mail.* -/var/log/mail.log
+user.* -/var/log/user.log
+*.emerg *
+
+# End /etc/syslog.conf
+EOF
+
+end_package
+
+#######################################
+## 6.71. Sysvinit-2.90
+#######################################
+start_package "6.71. Sysvinit-2.90" sysvinit-2.90 tar.xz
+
+patch -Np1 -i ../sysvinit-2.90-consolidated-1.patch
+
+make -C src
+
+make -C src install
+
+end_package
+
+#######################################
+## 6.72. Eudev-3.2.5
+#######################################
+start_package "6.72. Eudev-3.2.5 make" eudev-3.2.5 tar.gz
+
+cat > config.cache << "EOF"
+HAVE_BLKID=1
+BLKID_LIBS="-lblkid"
+BLKID_CFLAGS="-I/tools/include"
+EOF
+
+./configure --prefix=/usr           \
+            --bindir=/sbin          \
+            --sbindir=/sbin         \
+            --libdir=/usr/lib       \
+            --sysconfdir=/etc       \
+            --libexecdir=/lib       \
+            --with-rootprefix=      \
+            --with-rootlibdir=/lib  \
+            --enable-manpages       \
+            --disable-static        \
+            --config-cache
+
+LIBRARY_PATH=/tools/lib make
+
+## Test start here
+mkdir -pv /lib/udev/rules.d
+mkdir -pv /etc/udev/rules.d
+
+make LD_LIBRARY_PATH=/tools/lib check
+
+end_timer
+
+```
+---
+```
+start_timer "6.72. Eudev-3.2.5 install"
+
+make LD_LIBRARY_PATH=/tools/lib install
+
+tar -xvf ../udev-lfs-20171102.tar.bz2
+make -f udev-lfs-20171102/Makefile.lfs install
+
+LD_LIBRARY_PATH=/tools/lib udevadm hwdb --update
+
+end_package
+
+#######################################
+## 6.73. Util-linux-2.32.1
+#######################################
+start_package "6.73. Util-linux-2.32.1 make" util-linux-2.32.1 tar.xz
+
+mkdir -pv /var/lib/hwclock
+
+rm -vf /usr/include/{blkid,libmount,uuid}
+
+./configure ADJTIME_PATH=/var/lib/hwclock/adjtime   \
+            --docdir=/usr/share/doc/util-linux-2.32.1 \
+            --disable-chfn-chsh  \
+            --disable-login      \
+            --disable-nologin    \
+            --disable-su         \
+            --disable-setpriv    \
+            --disable-runuser    \
+            --disable-pylibmount \
+            --disable-static     \
+            --without-python     \
+            --without-systemd    \
+            --without-systemdsystemunitdir
+
+make
+
+## Test start here
+#chown -Rv nobody .
+#su nobody -s /bin/bash -c "PATH=$PATH make -k check"
+
+end_timer
+
+```
+---
+# Warning
+Running the test suite as the root user can be harmful to your system. To run it, the CONFIG_SCSI_DEBUG option for the kernel must be available in the currently running system, and must be built as a module. Building it into the kernel will prevent booting. For complete coverage, other BLFS packages must be installed. If desired, this test can be run after rebooting into the completed LFS system and running:
+
+bash tests/run.sh --srcdir=$PWD --builddir=$PWD
+```
+start_timer "6.73. Util-linux-2.32.1 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.74. Man-DB-2.8.4
+#######################################
+start_package "6.74. Man-DB-2.8.4 make" man-db-2.8.4 tar.xz
+
+./configure --prefix=/usr                        \
+            --docdir=/usr/share/doc/man-db-2.8.4 \
+            --sysconfdir=/etc                    \
+            --disable-setuid                     \
+            --enable-cache-owner=bin             \
+            --with-browser=/usr/bin/lynx         \
+            --with-vgrind=/usr/bin/vgrind        \
+            --with-grap=/usr/bin/grap            \
+            --with-systemdtmpfilesdir=
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.74. Man-DB-2.8.4 install"
+
+make install
+
+end_package
+
+#######################################
+## 6.75. Tar-1.30
+#######################################
+start_package "6.75. Tar-1.30 make" tar-1.30 tar.xz
+
+FORCE_UNSAFE_CONFIGURE=1  \
+./configure --prefix=/usr \
+            --bindir=/bin
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.75. Tar-1.30 install"
+
+make install
+make -C doc install-html docdir=/usr/share/doc/tar-1.30
+
+end_package
+
+#######################################
+## 6.76. Texinfo-6.5
+#######################################
+start_package "6.76. Texinfo-6.5 make" texinfo-6.5 tar.xz
+
+sed -i '5481,5485 s/({/(\\{/' tp/Texinfo/Parser.pm
+
+./configure --prefix=/usr --disable-static
+
+make
+
+make check
+
+end_timer
+
+```
+---
+```
+start_timer "6.76. Texinfo-6.5 install"
+
+make install
+
+make TEXMF=/usr/share/texmf install-tex
+
+pushd /usr/share/info
+rm -v dir
+for f in *
+  do install-info $f dir 2>/dev/null
+done
+popd
+
+end_package
+
+#######################################
+## 6.77. Vim-8.1
+#######################################
+start_package "6.77. Vim-8.1 make" vim-8.1 tar.bz2
+
+echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+
+./configure --prefix=/usr
+
+make
+
+LANG=en_US.UTF-8 make -j1 test &> vim-test.log
+
+end_timer
+
+```
+---
+```
+start_timer "6.77. Vim-8.1 install"
+
+make install
+
+ln -sv vim /usr/bin/vi
+for L in  /usr/share/man/{,*/}man1/vim.1; do
+    ln -sv vim.1 $(dirname $L)/vi.1
+done
+
+ln -sv ../vim/vim81/doc /usr/share/doc/vim-8.1
+
+cat > /etc/vimrc << "EOF"
+" Begin /etc/vimrc
+
+" Ensure defaults are set before customizing settings, not after
+source $VIMRUNTIME/defaults.vim
+let skip_defaults_vim=1 
+
+set nocompatible
+set backspace=2
+set mouse=
+syntax on
+if (&term == "xterm") || (&term == "putty")
+  set background=dark
+endif
+
+" End /etc/vimrc
+EOF
+
+
+
+end_package
+
+```
+---
+```
+#######################################
+## 6.77. Nano-2.9.8
+#######################################
+start_package "6.77. Nano-2.9.8" nano-2.9.8 tar.xz
+
+./configure --prefix=/usr     \
+            --sysconfdir=/etc \
+            --enable-utf8     \
+            --docdir=/usr/share/doc/nano-2.9.8 &&
+make
+
+make install &&
+install -v -m644 doc/{nano.html,sample.nanorc} /usr/share/doc/nano-2.9.8
+
+end_package
+
+#######################################
+## 6.79. Stripping Again
+#######################################
+start_timer "6.79. Stripping Again"
+
+save_lib="ld-2.28.so libc-2.28.so libpthread-2.28.so libthread_db-1.0.so"
+
+cd /lib
+
+for LIB in $save_lib; do
+    objcopy --only-keep-debug $LIB $LIB.dbg 
+    strip --strip-unneeded $LIB
+    objcopy --add-gnu-debuglink=$LIB.dbg $LIB 
+done    
+
+save_usrlib="libquadmath.so.0.0.0 libstdc++.so.6.0.25
+             libitm.so.1.0.0 libatomic.so.1.2.0" 
+
+cd /usr/lib
+
+for LIB in $save_usrlib; do
+    objcopy --only-keep-debug $LIB $LIB.dbg
+    strip --strip-unneeded $LIB
+    objcopy --add-gnu-debuglink=$LIB.dbg $LIB
+done
+
+unset LIB save_lib save_usrlib
+
+exec /tools/bin/bash
+
+/tools/bin/find /usr/lib -type f -name \*.a \
+   -exec /tools/bin/strip --strip-debug {} ';'
+
+/tools/bin/find /lib /usr/lib -type f \( -name \*.so* -a ! -name \*dbg \) \
+   -exec /tools/bin/strip --strip-unneeded {} ';'
+
+/tools/bin/find /{bin,sbin} /usr/{bin,sbin,libexec} -type f \
+    -exec /tools/bin/strip --strip-all {} ';'
+
+end_timer
+
+#######################################
+## 6.80. Cleaning Up
+#######################################
+
+# rm -rf /tmp/*
+
+logout
+
+```
+---
+```
+
+logout
+
+chroot "$LFS" /usr/bin/env -i          \
+    HOME=/root TERM="$TERM"            \
+    PS1='(lfs chroot) \u:\w\$ '        \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+    /bin/bash --login
+
+end_timer
+
+```
+---
+```
+rm -f /usr/lib/lib{bfd,opcodes}.a
+rm -f /usr/lib/libbz2.a
+rm -f /usr/lib/lib{com_err,e2p,ext2fs,ss}.a
+rm -f /usr/lib/libltdl.a
+rm -f /usr/lib/libfl.a
+rm -f /usr/lib/libz.a
+
+find /usr/lib /usr/libexec -name \*.la -delete
+
+```
+---
+```
+#######################################
+## 7. System Configuration
+#######################################
 
 ```
