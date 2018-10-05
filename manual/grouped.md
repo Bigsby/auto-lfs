@@ -123,6 +123,9 @@ rm sh
 ln -s bash sh
 popd
 
+apt-get update
+apt-get updgrade
+
 apt-get install -y \
   bash \
   binutils \
@@ -609,7 +612,7 @@ end_package
 start_package "5.18. Bzip2-1.0.6" bzip2-1.0.6 tar.gz
 
 make
-make PREFIX=/tools instal
+make PREFIX=/tools install
 
 end_package
 
