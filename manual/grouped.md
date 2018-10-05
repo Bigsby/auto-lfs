@@ -22,7 +22,11 @@ function go_to_sources() {
 }
 
 function tar_cd() {
-    last_package=$($3 || $1)
+    if [ -n "$3" ]; then
+        last_package="$3"
+    else
+        last_package="$1"
+    fi
     go_to_sources
     tar xf "$1.$2"
     cd $last_package
@@ -35,7 +39,7 @@ function rm_cd() {
     fi
 }
 
-log_file=~/build.log
+log_file=/tmp/build.log
 
 function build_log() {
     echo "$(formated_date) $1" >> $log_file
@@ -97,7 +101,7 @@ function end_timer() {
 
 function start_package() {
     start_timer "$1"
-    tar_cd $2 $3
+    tar_cd $2 $3 $4
 }
 
 function end_package() {
@@ -548,6 +552,8 @@ start_package "5.14. M4-1.4.18" m4-1.4.18 tar.xz
 
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
 echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
+
+./configure --prefix=/tools
 
 make
 make install
