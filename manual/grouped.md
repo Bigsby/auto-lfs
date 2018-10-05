@@ -91,6 +91,7 @@ function end_timer() {
         end_time=$SECONDS
         elapsed="$(($end_time-$start_time))"
         build_log "($(format_time $elapsed)) F $timer_title"
+        timer_title=""
     fi
 }
 
@@ -111,6 +112,8 @@ EOF
 #######################################
 ## 2.2. Host System Requirements
 #######################################
+start_timer "2.2. Host System Requirements"
+
 pushd /bin
 rm sh
 ln -s bash sh
@@ -137,12 +140,16 @@ apt-get install -y \
   texinfo \
   xz-utils
 
+end_timer
+
 ```
 ---
 ```
 #######################################
 ## 2.4. Creating a New Partition 
 #######################################
+start_timer "2.4. Creating a New Partition"
+
 DEVICE=/dev/$DRIVE
 PARTITION="$DEVICE$PARTITION_NUMBER"
 
@@ -162,6 +169,8 @@ mkdir -pv $LFShttp://www.linuxfromscratch.org/lfs/view/stable/index.html
 echo -e "\n$PARTITION\t$LFS\text4\tdefaults\t0\t0\n" >> /etc/fstab
 mount -a
 
+end_timer
+
 #######################################
 ## 2.6. Setting The $LFS Variable 
 #######################################
@@ -171,6 +180,8 @@ source .bashrc
 #######################################
 ## 3. All Packages
 #######################################
+start_timer "3. All Packages"
+
 mkdir -v $LFS/sources
 chmod -v a+wt $LFS/sources
 wget http://www.linuxfromscratch.org/lfs/view/stable/wget-list
@@ -179,6 +190,8 @@ wget --input-file=wget-list --continue --directory-prefix=$LFS/sources
 pushd $LFS/sources
 md5sum -c ~/md5sums
 popd
+
+end_timer
 
 #######################################
 ## 4.2. Creating the $LFS/tools Directory
@@ -206,6 +219,8 @@ su - lfs
 #######################################
 ## 4.4. Setting Up the Environment
 #######################################
+start_timer "4.4. Setting Up the Environment"
+
 cat > ~/.bash_profile << "EOF"
 exec env -i HOME=$HOME TERM=$TERM PS1='\u:\w\$ ' /bin/bash
 EOF
@@ -220,6 +235,8 @@ export LFS LC_ALL LFS_TGT PATH
 EOF
 
 source ~/.bash_profile
+
+end_timer
 
 #######################################
 ## 5.4. Binutils-2.31.1 - Pass 1 (1)
