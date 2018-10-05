@@ -22,9 +22,9 @@ function go_to_sources() {
 }
 
 function tar_cd() {
-    last_package=$1
+    last_package=$($3 || $1)
     go_to_sources
-    tar xf "$last_package.$2"
+    tar xf "$1.$2"
     cd $last_package
 }
 
@@ -500,7 +500,7 @@ rm -v dummy.c a.out
 #######################################
 ## 5.11. Tcl-8.6.8 (0.9)
 #######################################
-start_package "5.11. Tcl-8.6.8" tcl8.6.8-src tar.gz
+start_package "5.11. Tcl-8.6.8" tcl8.6.8-src tar.gz tcl8.6.8
 
 cd unix
 ./configure --prefix=/tools
