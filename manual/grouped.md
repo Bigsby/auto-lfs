@@ -37,7 +37,7 @@ function rm_cd() {
 
 log_file=~/build.log
 
-function build_log () {
+function build_log() {
     echo "$(formated_date) $1" >> $log_file
 }
 
@@ -45,7 +45,7 @@ function pad() {
     [ $1 -gt 9 ] && echo $1 || echo "0"$1
 }
 
-function format_time () {
+function format_time() {
     num=$1
     min=0
     hour=0
