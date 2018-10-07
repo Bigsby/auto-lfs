@@ -1,11 +1,6 @@
 # All grouped scripts
 ```
-sudo passwd root
-
-```
----
-```
-su -
+sudo -s
 
 ```
 ---
@@ -108,6 +103,7 @@ function end_package() {
     rm_cd
     end_timer
 }
+
 EOF
 
 ```
@@ -148,6 +144,7 @@ apt-get install -y \
   xz-utils
 
 end_timer
+chmod 777 /tmp/build.log
 
 ```
 ---
@@ -980,6 +977,7 @@ check kernel
 ## 6.7. Linux-4.18.5 API Headers 
 #######################################
 unset LFS
+KERNEL=$(uname -r | cut -d"." -f1,2)
 
 start_package "6.7. Linux-4.18.5 API Headers" linux-4.18.5 tar.xz
 
